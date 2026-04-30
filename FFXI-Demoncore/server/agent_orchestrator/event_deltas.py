@@ -188,6 +188,19 @@ EVENT_DELTAS: list[tuple[tuple[str, str], tuple[str, float]]] = [
     (("died_with_full_durability_loss", "*"),   ("furious",  +0.50)),
     (("repair_completed_for_player",   "*pellah*"),     ("content", +0.20)),
     (("repair_completed_for_player",   "*repair_npc*"), ("content", +0.20)),
+
+    # Crafting events (per CRAFTING_SYSTEM.md). Crafting is a parallel
+    # progression axis with its own mood payoff loop.
+    (("crafted_hq_tier_1",          "*"),            ("content",  +0.10)),
+    (("crafted_hq_tier_2_or_higher","*hero*"),       ("content",  +0.30)),
+    (("crafted_hq_tier_2_or_higher","*"),            ("content",  +0.20)),
+    (("crafted_signed_item",        "*"),            ("content",  +0.50)),
+    (("master_synthesis_LB_used",   "*"),            ("content",  +0.40)),
+    (("synthesis_failed",           "*"),            ("weary",    +0.10)),
+    (("crafted_for_player",         "*pellah*"),     ("content",  +0.20)),
+    (("crafted_for_player",         "*"),            ("content",  +0.15)),
+    (("became_grandmaster",         "*hero*"),       ("content",  +0.50)),
+    (("became_grandmaster",         "*"),            ("content",  +0.40)),
 ]
 
 

@@ -48,33 +48,65 @@ but it's now functionally a club until repaired.
 
 ## Wear rates per equipment + use action
 
+**Target**: a player can XP-farm for ~8 hours of continuous play
+before any piece needs a repair-NPC visit. Wear is the
+*economic rhythm* of the game, not a constant tax. The numbers
+below are calibrated against an estimated 6,000 active swings
+in an 8-hour farm session.
+
 ```
 Weapons
-  per swing landed:       -0.10% durability
-  per crit landed:        -0.20% (extra stress)
-  per WS use:             -0.50% (concentrated stress)
+  per swing landed:       -0.010% durability
+  per crit landed:        -0.020% (extra stress on a clean hit)
+  per WS use:             -0.050% (concentrated stress)
 
 Armor (per damage taken)
-  light armor:           -0.05% per 100 damage absorbed
-  medium armor:          -0.03% per 100 damage absorbed
-  heavy armor:           -0.02% per 100 damage absorbed (heavy
-                                                         lasts longer)
+  light armor:           -0.005% per 100 damage absorbed
+  medium armor:          -0.003% per 100 damage absorbed
+  heavy armor:           -0.002% per 100 damage absorbed (heavy
+                                                          lasts longer)
 
 Magic foci (staves, grimoires)
-  per cast:                -0.08% per cast
-  per spell weight point:  -0.005% per cast (heavier spells = more wear)
+  per cast:                -0.008% per cast
+  per spell weight point:  -0.0005% per cast (heavier spells = more wear)
 
 Jewelry (rings, earrings, etc)
-  passive:                 -0.001% per minute equipped
-  procced:                 -1% on each proc trigger
+  passive:                 -0.0001% per minute equipped
+  procced:                 -0.10% on each proc trigger
 
 Death penalty (hardcore)
-  all equipped pieces:    -25% durability instantly
+  level 1-89:             -25% durability on all equipped pieces
+  level 90-98:            -40% durability + 2-day Reraise lockout
+  level 99:               100% durability LOSS (all gear unusable;
+                                                permadeath fomor wears
+                                                the broken gear visibly)
 ```
 
-These rates are tuning bait. Playtest will adjust. The principle:
-heavier-use gear wears faster; jewelry wears almost not at all
-(it's ornament not action).
+### Why these numbers (the playtime math)
+
+A typical XP-farm session:
+- ~30 swings/min during active combat
+- ~40% of session time is active combat (rest is travel + buffs +
+  downtime)
+- 8 hours = ~5,760 active swings
+
+At -0.010% per swing: 5,760 swings = 57.6% durability used.
+The piece is at ~42% durability after 8 hours — `damaged` stage
+just barely avoided. Time for a repair stop.
+
+Combat-heavy events (BCNM, raids, sieges) burn faster because
+of WS density and crits — those sessions might cost 70-80%
+durability over 4-5 hours, which is the desired economic
+intensity for endgame play.
+
+Death stays punchy. The -25% on every death is a real loss but
+a small repair charge fixes it; the lvl-99 100% loss is the
+hardcore-tier penalty that makes apex play meaningful.
+
+The principle: gear lasts a workday. Repair is a deliberate
+visit, not a constant interruption. Players engaging the
+economy (crafting, buying, repairing) is the natural rhythm of
+play, not a grind tax.
 
 ---
 

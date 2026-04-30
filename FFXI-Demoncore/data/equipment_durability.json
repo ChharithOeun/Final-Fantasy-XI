@@ -1,48 +1,49 @@
 {
-  "_comment": "Durability schema per EQUIPMENT_WEAR.md. LSB items.sql will gain `durability_max` + `wear_rate` columns. Tier defaults shown here; per-item overrides for relics/mythics. Wear rates from the doc — tuning bait, will iterate in playtest.",
+  "_comment": "Durability schema per EQUIPMENT_WEAR.md. LSB items.sql will gain `durability_max` + `wear_rate` columns. Tier defaults shown here; per-item overrides for relics/mythics. Wear rates calibrated to ~8-hour XP-farm playtime before repair NPC visit (per Chharbot user direction).",
+  "_calibration": "wear_rate is per-action; an 8h farm session is ~5760 active swings. At weapon_wear_rate 0.010 that's 57.6% durability used. A piece avoids the 'damaged' stage threshold (50%) just barely, requiring repair afterwards.",
 
   "tier_defaults": {
     "early": {
       "durability_max":     100,
-      "weapon_wear_rate":   0.10,
-      "armor_wear_rate":    0.05,
-      "focus_wear_rate":    0.08,
+      "weapon_wear_rate":   0.010,
+      "armor_wear_rate":    0.005,
+      "focus_wear_rate":    0.008,
       "repair_cost_gil_per_max": 50,
       "repairable_by_tiers": ["repair_kit", "npc_apprentice", "npc_master", "player_smithing_5+"],
       "notes": "lvl 1-30 gear; cheap to repair, fragile to use"
     },
     "mid": {
       "durability_max":     300,
-      "weapon_wear_rate":   0.10,
-      "armor_wear_rate":    0.04,
-      "focus_wear_rate":    0.07,
+      "weapon_wear_rate":   0.010,
+      "armor_wear_rate":    0.004,
+      "focus_wear_rate":    0.007,
       "repair_cost_gil_per_max": 200,
       "repairable_by_tiers": ["repair_kit", "npc_apprentice", "npc_master", "player_smithing_25+"],
       "notes": "lvl 30-50 gear; mythril, beetle, leather upgrade tier"
     },
     "high": {
       "durability_max":     800,
-      "weapon_wear_rate":   0.08,
-      "armor_wear_rate":    0.03,
-      "focus_wear_rate":    0.05,
+      "weapon_wear_rate":   0.008,
+      "armor_wear_rate":    0.003,
+      "focus_wear_rate":    0.005,
       "repair_cost_gil_per_max": 800,
       "repairable_by_tiers": ["npc_master", "player_smithing_50+"],
       "notes": "lvl 50-65 gear; scorpion, shadow, beetle-king tier"
     },
     "endgame": {
       "durability_max":    2000,
-      "weapon_wear_rate":   0.06,
-      "armor_wear_rate":    0.02,
-      "focus_wear_rate":    0.04,
+      "weapon_wear_rate":   0.006,
+      "armor_wear_rate":    0.002,
+      "focus_wear_rate":    0.004,
       "repair_cost_gil_per_max": 5000,
       "repairable_by_tiers": ["npc_master", "player_smithing_75+"],
       "notes": "lvl 65-75 gear; kirin, adaman tier; significant gil cost per repair"
     },
     "mythic": {
       "durability_max":    5000,
-      "weapon_wear_rate":   0.03,
-      "armor_wear_rate":    0.01,
-      "focus_wear_rate":    0.02,
+      "weapon_wear_rate":   0.003,
+      "armor_wear_rate":    0.001,
+      "focus_wear_rate":    0.002,
       "repair_cost_gil_per_max": 50000,
       "repairable_by_tiers": ["master_npc_only", "player_smithing_99_mastery_5"],
       "notes": "Excalibur, Spharai, Yoichinoyumi tier; 50K+ gil per repair, master NPCs only"
