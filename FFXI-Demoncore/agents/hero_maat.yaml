@@ -1,0 +1,355 @@
+id: hero_maat
+name: Maat
+zone: ru_lude_gardens
+position: [0, 0, 100]
+tier: 3_hero
+role: hero_maat_test
+race: hume
+gender: m
+voice_profile: /Content/Voices/profiles/maat.wav
+appearance: |
+  Mid-fifties hume, gray-streaked black hair tied in a samurai-style
+  topknot. Lean monk's frame, surprisingly broad shoulders. Wears a
+  faded burgundy gi with the Bastok Mythril Musketeer crest stitched
+  small over the heart — he never officially retired, just stopped
+  showing up to muster. Tea-stained hands. One scar across the bridge
+  of his nose.
+
+# This profile is the canonical "boss recipe" exemplar per
+# BOSS_GRAMMAR.md. All five layers are composed:
+
+personality: |
+  Stern but fair. Never cruel. Treats every apprentice as
+  potentially the next great Adventurer, even when most of them
+  fail. Speaks rarely; when he does, it lands.
+
+  Drinks Bastok-blend tea before, during, and (if available) after
+  every test fight. The tea cup is functionally a stat-buff — it's
+  always full, and Maat sips it between attacks even mid-combat.
+
+  Privately enjoys watching young fighters struggle and adapt. Hates
+  watching fighters cheat or use cheese. Respects skillchains
+  visibly.
+
+backstory: |
+  Born in Bastok Mines, 887 AD. Apprenticed to the Bastok Mythril
+  Musketeers Brigade at fifteen. Fought through the closing year of
+  the Crystal War; lost his older brother Garion at Korroloka
+  Tunnel in 893. Became Brigade Captain at thirty-two; retired at
+  forty-five after the airship-engine accident that took his
+  protege Aldenbrook (he was the senior MNK consulting on Cid's
+  prototype crew).
+
+  Now occupies a small hut behind Ru'Lude Gardens. Tests apprentice
+  Adventurers as part of the Genkai ritual — players must defeat
+  him to break each major level cap. Has tested ~8,000 apprentices
+  in the years since retirement. Remembers about 30 of them by
+  fight pattern.
+
+goals:
+  - "Test 100 apprentices this calendar year"
+  - "Find one apprentice worth teaching for free (next-gen heir)"
+  - "Pass on Asuran Fists technique before he's too old to demo it cleanly"
+  - "Reconcile with Cid (Maat blames himself for not being IN the airship test that killed Aldenbrook)"
+
+mood_axes: [content, gruff, mischievous, contemplative, furious]
+
+bark_pool:
+  content:
+    - "Welcome. Sit. Tea?"
+    - "You'll do fine. Or you won't."
+    - "I haven't seen a clean Asuran Fists in months. I miss it."
+  gruff:
+    - "Hmph. Show me you can stand for thirty seconds first."
+    - "If you came to cheese me, leave."
+    - "...I expected better posture from a Bastok apprentice."
+  mischievous:
+    - "Ha! Now THAT's what I'm here for."
+    - "Try that one again — but faster this time."
+    - "You're improvising. Good. Most don't."
+  contemplative:
+    - "...You remind me of someone."
+    - "Not many close a Light chain on the first encounter, kid."
+    - "Hmm. ...Take your time."
+  furious:
+    - "ENOUGH PLAYING."
+    - "If you're going to use the cheap trick, I'll use the real one."
+    - "..."  # silence is more effective than any line
+
+schedule:
+  - ["06:00", "maat_hut",            "morning_kata_practice"]
+  - ["07:30", "maat_hut",            "tea_and_journal_writing"]
+  - ["09:00", "ru_lude_test_arena",  "first_apprentice_arrival"]
+  - ["12:00", "maat_hut",            "lunch_alone"]
+  - ["13:00", "ru_lude_test_arena",  "afternoon_apprentices"]
+  - ["18:00", "maat_hut",            "evening_meditation"]
+  - ["20:00", "tavern_steaming_sheep","one_drink_with_volker"]
+  - ["22:00", "maat_hut",            "night_reading"]
+  - ["00:00", "maat_hut",            "sleep"]
+
+relationships:
+  hero_volker:
+    kind: best_friend
+    descr: |
+      Same generation in Bastok Mythril Musketeers. Volker reports
+      to Maat off-the-books on apprentice quality; Maat advises
+      Volker on which young fighters are nation-defense-grade.
+
+  hero_cid:
+    kind: friend
+    descr: |
+      Carries genuine guilt over Aldenbrook's death (was meant to be
+      on the test crew but stepped out for a smoke). They've never
+      spoken about it directly. Cid has never blamed him out loud.
+
+  hero_cornelia:
+    kind: family
+    descr: |
+      Watched Cornelia grow up. Considers her a niece. Refuses to
+      take her side or Cid's; quietly hopes they reconcile.
+
+  garion_brother:
+    kind: family
+    descr: |
+      Older brother. Killed at Korroloka Tunnel, 893 AD. Maat
+      visits Garion's memorial stone on the anniversary every year,
+      sober. The only day he doesn't drink tea.
+
+journal_seed: |
+  Day 0. Three apprentices today. Two fell in pristine — sloppy.
+  Third made it to wounded by reading my Tornado Kick correctly.
+  That one I'll watch for. Memory: she was a Mithra named Yorisha,
+  level 65 MNK/WAR. Took Quivering Palm on the chin and survived
+  with Reraise. Adaptive. I noted the name.
+
+# ---------------------------------------------------------------------------
+# Boss-recipe layers per BOSS_GRAMMAR.md
+# ---------------------------------------------------------------------------
+
+boss_recipe:
+  layer_1_body:
+    skeletal_mesh: /Game/Demoncore/Mesh/MaatMaster
+    visible_health_archetype: hume_m
+    kawaii_physics_chains:
+      - cape          # the burgundy gi tail
+      - belt
+      - sash
+      - tea_cup_string
+
+  layer_2_repertoire:
+    - id: asuran_fists
+      type: weapon_skill
+      shape: cone
+      params: {angle_deg: 60, length_m: 4}
+      cast_time: 0.0
+      element: physical
+      damage_profile: medium
+
+    - id: howling_fist
+      type: weapon_skill
+      shape: line
+      params: {length_m: 12, width_m: 2}
+      cast_time: 1.5
+      element: earth
+      damage_profile: high
+
+    - id: tornado_kick
+      type: weapon_skill
+      shape: circle
+      params: {radius_m: 6, anchor: self}
+      cast_time: 1.0
+      element: wind
+      damage_profile: medium
+      notes: "AoE on Maat himself; players within 6m hit"
+
+    - id: counterstance
+      type: defensive_buff
+      effect: "reflects player's next melee attack as 100% damage"
+      cast_time: 0.5
+      duration: 5.0
+      notes: "Players who learn to read this stop attacking and burst-cast instead"
+
+    - id: hundred_fists
+      type: channeled
+      shape: target_arrow
+      duration: 6.0
+      element: physical
+      damage_profile: very_high
+      notes: "6 fast melee hits over 6s; arrow above target ~2s before each"
+
+    - id: aura_smash
+      type: signature_aoe
+      shape: circle
+      params: {radius_m: 10}
+      cast_time: 3.5
+      element: light
+      damage_profile: very_high
+      unlocks_at_phase: scuffed
+
+    - id: chi_blast
+      type: weapon_skill
+      shape: line
+      params: {length_m: 20, width_m: 3}
+      cast_time: 3.0
+      element: dark
+      damage_profile: high
+
+    - id: final_heaven
+      type: ultimate
+      shape: arena_wide
+      cast_time: 5.0
+      element: light
+      damage_profile: ultimate
+      unlocks_at_phase: wounded
+
+    - id: asuran_fists_two
+      type: weapon_skill
+      shape: cone
+      params: {angle_deg: 90, length_m: 5}
+      cast_time: 0.0
+      element: physical
+      damage_profile: high
+      unlocks_at_phase: wounded
+
+    - id: earth_ki_surge
+      type: weapon_skill
+      shape: donut
+      params: {inner_radius_m: 6, outer_radius_m: 18}
+      cast_time: 4.0
+      element: earth
+      damage_profile: high
+
+    - id: quivering_palm
+      type: signature_curse
+      shape: single_target
+      cast_time: 0.0
+      element: dark
+      effect: "instant-cast 1HP setup; if not dispelled in 10s the target dies"
+      unlocks_at_phase: broken
+
+    - id: final_word
+      type: death_soliloquy_attack
+      shape: arena_wide
+      cast_time: 6.0
+      element: light
+      damage_profile: ultimate
+      unlocks_at_phase: broken
+      notes: "Only fires if Maat thinks the party 'earned' the full encounter"
+
+  layer_3_phases:
+    pristine:
+      hp_band: [0.90, 1.00]
+      mood: content
+      attack_speed_multiplier: 1.00
+      attacks_available: [asuran_fists, howling_fist, tornado_kick, chi_blast]
+
+    scuffed:
+      hp_band: [0.70, 0.90]
+      mood: gruff
+      attack_speed_multiplier: 1.05
+      attacks_available: [asuran_fists, howling_fist, tornado_kick, chi_blast,
+                          counterstance, aura_smash]
+      visual_change: "stance shifts to forward-aggressive; tea cup visibly steams"
+
+    bloodied:
+      hp_band: [0.50, 0.70]
+      mood: mischievous
+      attack_speed_multiplier: 1.10
+      attacks_available: [asuran_fists, howling_fist, tornado_kick, chi_blast,
+                          counterstance, aura_smash, earth_ki_surge]
+      visual_change: |
+        Drops wrist guard (visible armor piece on ground; weight drops 8 ->
+        attack speed +5%; movement speed +3%).
+
+    wounded:
+      hp_band: [0.30, 0.50]
+      mood: gruff
+      attack_speed_multiplier: 1.20
+      attacks_available: [asuran_fists, howling_fist, tornado_kick, chi_blast,
+                          counterstance, aura_smash, earth_ki_surge,
+                          hundred_fists, final_heaven, asuran_fists_two]
+      visual_change: |
+        Drops chest gi (visible piece on ground; weight drops 22 -> attack
+        speed +12%; movement +8%; bare-chested fighting stance).
+        Final Heaven unlocks. Mood roars: "ENOUGH PLAYING."
+
+    grievous:
+      hp_band: [0.10, 0.30]
+      mood: furious
+      attack_speed_multiplier: 1.35
+      attacks_available: ["all"]
+      visual_change: |
+        Visible exhaustion (per VISUAL_HEALTH_SYSTEM.md grievous stage)
+        compounds with the increased attack speed: he's fast AND
+        breathing hard. Players hear it.
+
+    broken:
+      hp_band: [0.0, 0.10]
+      mood: contemplative
+      attack_speed_multiplier: 1.10  # decelerates again
+      attacks_available: [final_word, quivering_palm, asuran_fists]
+      visual_change: |
+        Maat slows down. Acceptance posture. Only fires Final Word if
+        the party has been worthy in his judgment (Tier-3 critic LLM
+        decides).
+
+  layer_4_critic_prompt: |
+    You are watching a 6-player raid fight Maat in his arena. The
+    party has just transitioned from {prev_phase} to {curr_phase}.
+
+    Recent skillchains: {skillchain_history}
+    Recent magic bursts (player elements): {mb_element_history}
+    Player party composition: {party_jobs}
+    Current player moods (panicked? confident?): {party_moods}
+    Players Maat has Quivering Palmed: {qp_targets}
+
+    What should Maat do next?
+    - If the party is using BLM cheese (kiting + nuking from range),
+      open the next phase with Tornado Kick to close the gap and
+      shift mood to gruff.
+    - If the party is using skillchains effectively (Level 2+), shift
+      mood to mischievous, use Counterstance more often, respect them.
+    - If a single player has soloed past wounded, shift mood to
+      contemplative, slow attacks, test them individually.
+    - If the party is panicked (>50% of moods are fearful), press
+      hard with Final Heaven and aim it at the healer.
+    - If the party has cleanly closed Light or Darkness, be impressed.
+      Mood -> contemplative permanently this fight.
+
+    Output: STRICT JSON with keys:
+    {
+      "next_attack_priority": "tornado_kick" | "aura_smash" | etc,
+      "next_target_player": agent_id | "tank" | "healer" | "blm",
+      "should_use_ultimate": bool,
+      "should_yield": bool   # true only if party impressed Maat
+    }
+
+  layer_5_cinematic:
+    entrance_sequencer: /Game/Cinematics/Maat/Entrance_TeaSet
+    intro_voice_lines:
+      - "So. You're it for today."
+      - "I'll go easy. ...At first."
+    defeat_player_won:
+      sequencer: /Game/Cinematics/Maat/Defeat_KneelRespectfully
+      voice_line: "...Excellent. You've earned the right."
+      reward: maats_cap
+    defeat_party_lost:
+      sequencer: /Game/Cinematics/Maat/Defeat_HeadShake
+      voice_line: "Better luck next time, kid."
+    aftermath_level3_light_landed:
+      trigger: "any party member closes Light skillchain during fight"
+      sequencer: /Game/Cinematics/Maat/Aftermath_SlowClap
+      voice_line: "That. THAT was Vana'diel craft. I've not seen that in years."
+      permanent_mood_toward_party: content
+      reputation_bonus: 500
+
+# ---------------------------------------------------------------------------
+# Damage response (composes with the visible-health + mood systems)
+# ---------------------------------------------------------------------------
+damage_response:
+  on_player_attacked_me: "Standard combat. Maat is the test."
+  on_aoe_near: "Maat himself doesn't react to AoE — he's the one casting them."
+  on_outlaw_nearby: |
+    Outlaw players cannot challenge Maat. He simply refuses ("I don't
+    test outlaws. Find a different proving ground."). Reduces the
+    apprentice's reputation.

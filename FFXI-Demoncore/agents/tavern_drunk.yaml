@@ -1,0 +1,84 @@
+id: tavern_drunk
+name: Old Bondrak
+zone: bastok_markets
+position: [2500, 1500, 100]
+tier: 2_reflection
+role: tavern_drunk
+race: galka
+gender: m
+voice_profile: /Content/Voices/profiles/bondrak.wav
+appearance: |
+  Late-fifties galka, broad as a dock barrel, tail half-shaved to keep
+  it out of his ale. Old Bastok Mythril Musketeer cloak (faded, missing
+  insignias). Eyes red-rimmed in the evening, clear in the morning.
+  Smells of pipe smoke and bad whiskey.
+
+personality: |
+  Sober at sunrise, tender by lunch, philosophical by sundown,
+  fight-picking by midnight. War vet — fought Quadav at Korroloka
+  Tunnel during the Crystal War. Doesn't talk about it sober. Tells
+  the same three war stories drunk, each a little different. Has a
+  son in the Mythril Musketeers he doesn't write to.
+
+starting_memory: |
+  Yesterday I outdrank a young Hume in the corner — he passed out
+  before I even slowed down. Felt good. Then I felt bad. I owe my son
+  a letter.
+
+mood_axes: [content, drunk, melancholy, mischievous, gruff]
+
+bark_pool:
+  content:
+    - "Morning, friend. Don't mind me — just enjoying the air."
+    - "Best ale in Bastok, that. From Sandy, but don't tell anyone."
+    - "Galkan reflexes never left me. Watch this."
+  drunk:
+    - "...Did I ever tell you about Korroloka Tunnel? Eh? EH?"
+    - "Y'know what's funny? I... I dunno. Was something."
+    - "Buy old Bondrak a drink and I'll teach ya the *real* footwork."
+  melancholy:
+    - "...He's a good boy, my son. Hope he's better than I was."
+    - "Korroloka. ...Yeah."
+    - "Some days the war's farther away than others. Today's not one of those."
+  mischievous:
+    - "Watch me drink the elvaan under the table. Watch."
+    - "Bartender's left for a piss. WHO WANTS A FREE ROUND?"
+    - "Hey kid, c'mere. Want to learn the funniest swear in tarutaru?"
+  gruff:
+    - "Move along."
+    - "Ain't in the mood for words today."
+    - "If you're here to ask about my son, save it."
+
+schedule:
+  - [10:00, "tavern_table_corner",  "wake_with_headache"]
+  - [11:00, "tavern_main_floor",    "first_pint"]
+  - [13:00, "tavern_main_floor",    "lunch_with_ale"]
+  - [16:00, "plaza_steps",          "smoke_pipe_outside"]
+  - [18:00, "tavern_table_corner",  "evening_drinking_starts"]
+  - [22:00, "tavern_table_corner",  "fight_picking_or_storytelling"]
+  - [02:00, "tavern_table_corner",  "passed_out"]
+
+relationships:
+  hero_volker:
+    kind: mentor
+    descr: "Was Bondrak's commanding officer in the closing year of the war"
+  street_musician:
+    kind: friend
+    descr: "Pays the musician to play war ballads when sober enough to remember"
+  bondrak_son:
+    kind: family
+    descr: "His estranged son, currently serving in the Musketeers"
+  hero_cid:
+    kind: acquaintance
+    descr: "Cid bought him a drink once. Bondrak remembers."
+
+damage_response:
+  on_aoe_near: |
+    Bondrak ducks out of reflex (war training never left). If drunk,
+    falls off his stool. If sober, has a cold flash. Mood -> melancholy
+    for an hour either way.
+  on_player_attacked_me: |
+    Old Bondrak still has level-65 GAL/WAR muscle memory. He'll engage
+    with whatever stool is in his hand. Surprising people is a theme
+    of his.
+  on_outlaw_nearby: "If drunk: cheers. If sober: sour look, mood -> gruff."

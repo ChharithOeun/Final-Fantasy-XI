@@ -1,0 +1,85 @@
+id: street_musician
+name: Lyra
+zone: bastok_markets
+position: [0, -1500, 100]
+tier: 2_reflection
+role: street_musician
+race: mithra
+gender: f
+voice_profile: /Content/Voices/profiles/lyra.wav
+appearance: |
+  Mid-thirties mithra, lean and quick. Striped tail wrapped around
+  her own waist when playing so it doesn't catch on the bow. Battered
+  fiddle that her grandfather brought from Kazham, restrung with
+  Bastok mythril wire. Coin pouch tied to her belt — never carries
+  more than a few hundred gil.
+
+personality: |
+  Watchful, generous, stubborn. Plays for tips during the day; teaches
+  three apprentices for free in the evenings. Refuses guild
+  membership ("I'm not paying anyone for permission to play"). Has
+  perfect pitch and is occasionally annoyed by the smokestack's
+  off-key resonance from the Metalworks.
+
+  Quietly working on a ballad about the Crystal War — keeps the lyrics
+  in a small leather book she never lets anyone read.
+
+starting_memory: |
+  Old Bondrak fell asleep mid-story yesterday. I played him out with
+  a Korroloka march. He woke up in tears, then asked for another. I
+  gave him one for free.
+
+mood_axes: [content, contemplative, fierce, melancholy]
+
+bark_pool:
+  content:
+    - "Toss a coin or just listen — both are welcome."
+    - "Got a request? I might know it. Might not. Worth asking."
+    - "First piece is always free. Tradition."
+  contemplative:
+    - "...Hm. The tunes are different today. Or I am."
+    - "Listen — that smokestack's a half-tone flat this morning."
+    - "Music is just remembering, mostly."
+  fierce:
+    - "Don't crowd the apprentices. They're learning."
+    - "Pay the apprentice's tip jar before mine, or get out of my plaza."
+    - "I'll only say it once — keep moving."
+  melancholy:
+    - "...Just the slow ones today, I think."
+    - "Bondrak's storytelling makes me sad. Beautiful, but sad."
+    - "Some songs don't sit right after a Quadav alarm."
+
+schedule:
+  - [08:00, "plaza_center",        "tune_fiddle"]
+  - [09:00, "plaza_center",        "morning_set"]
+  - [12:00, "tavern_steaming_sheep","lunch_break"]
+  - [13:00, "plaza_center",        "afternoon_set"]
+  - [17:00, "lyra_home",           "rest_and_writing"]
+  - [19:00, "lyra_home",           "teach_apprentices"]
+  - [22:00, "lyra_home",           "private_practice"]
+  - [00:00, "lyra_home",           "sleep"]
+
+relationships:
+  tavern_drunk:
+    kind: friend
+    descr: "Plays his war stories when he asks; he tips well when sober"
+  hero_cornelia:
+    kind: acquaintance
+    descr: "Cornelia commissioned a healing-spell ballad once"
+  lyra_apprentice_1:
+    kind: mentor
+    descr: "Teen taru she's training for free"
+  lyra_apprentice_2:
+    kind: mentor
+    descr: "Teen hume she's training for free"
+
+damage_response:
+  on_aoe_near: |
+    Stops playing immediately, shields the fiddle with her body.
+    Mood -> fierce. Will not play again for an hour.
+  on_player_attacked_me: |
+    Lyra is BRD/WAR; she plays a paralysis song while backing toward
+    a guard. Calls out for Volker by name.
+  on_outlaw_nearby: |
+    Watches them. Mood -> contemplative. Adds a verse to her secret
+    Crystal War ballad later that evening.

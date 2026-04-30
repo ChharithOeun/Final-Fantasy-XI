@@ -1,0 +1,135 @@
+# Tier 1 crowd NPCs — scripted+bark, no LLM in the hot path.
+#
+# We bundle these in a single file because each is light: a daily
+# schedule + bark pool + race/gender/role. The orchestrator's loader is
+# extended (or a small stamping script) to expand this file into one
+# row per NPC in the agents table.
+#
+# Authoring time per NPC: ~3 minutes.
+
+agents:
+
+  - id: soldier_patrol_e
+    name: Garron
+    zone: bastok_markets
+    position: [1500, 0, 100]
+    tier: 1_scripted
+    role: soldier_patrol
+    race: hume
+    gender: m
+    schedule:
+      - [06:00, "musketeer_barracks", "morning_drill"]
+      - [07:00, "patrol_loop_east",   "patrol_walk"]
+      - [12:00, "barracks_mess",      "lunch"]
+      - [13:00, "patrol_loop_east",   "patrol_walk"]
+      - [22:00, "musketeer_barracks", "sleep"]
+    bark_pool:
+      - "Move along, citizen."
+      - "Bastok prevails. Always."
+      - "Eyes open. Quadav scouts spotted near Zeruhn last week."
+      - "If you see anything strange, find a Musketeer."
+
+  - id: soldier_patrol_w
+    name: Vela
+    zone: bastok_markets
+    position: [-1500, 0, 100]
+    tier: 1_scripted
+    role: soldier_patrol
+    race: galka
+    gender: f
+    schedule:
+      - [06:00, "musketeer_barracks", "morning_drill"]
+      - [07:00, "patrol_loop_west",   "patrol_walk"]
+      - [12:00, "barracks_mess",      "lunch"]
+      - [13:00, "patrol_loop_west",   "patrol_walk"]
+      - [22:00, "musketeer_barracks", "sleep"]
+    bark_pool:
+      - "On patrol. Move."
+      - "Galka stand. Bastok stands."
+      - "If you're outlaw-tagged, walk slowly."
+      - "You smell of fish. Probably Zaldon's stall."
+
+  - id: citizen_walking_1
+    name: Resident Hena
+    zone: bastok_markets
+    position: [-1000, 500, 100]
+    tier: 1_scripted
+    role: civilian
+    race: hume
+    gender: f
+    schedule:
+      - [07:00, "home_residence_a", "leave_for_work"]
+      - [08:00, "metalworks_office","work_shift"]
+      - [12:00, "tavern_steaming_sheep", "lunch"]
+      - [13:00, "metalworks_office","work_shift"]
+      - [18:00, "home_residence_a", "evening_at_home"]
+      - [22:00, "home_residence_a", "sleep"]
+    bark_pool:
+      - "Excuse me, in a hurry."
+      - "Lovely day, isn't it? For Bastok."
+      - "Did you see the new airship hangar going up? Cid's at it again."
+
+  - id: citizen_walking_2
+    name: Sumrik
+    zone: bastok_markets
+    position: [1000, -500, 100]
+    tier: 1_scripted
+    role: civilian
+    race: tarutaru
+    gender: m
+    schedule:
+      - [08:00, "home_residence_b",   "leave_for_market"]
+      - [09:00, "vendor_zaldons_stall","buy_groceries"]
+      - [10:00, "home_residence_b",   "household_chores"]
+      - [14:00, "tea_shop",           "afternoon_tea"]
+      - [17:00, "home_residence_b",   "evening_at_home"]
+      - [21:00, "home_residence_b",   "sleep"]
+    bark_pool:
+      - "Pardon me, pardon me!"
+      - "The frostfish is excellent today."
+      - "You there — have you seen a small Tarutaru, about this tall? My nephew."
+
+  - id: child_running
+    name: Jin
+    zone: bastok_markets
+    position: [-500, 800, 100]
+    tier: 1_scripted
+    role: child
+    race: hume
+    gender: m
+    schedule:
+      - [07:00, "school_steps",         "wait_for_friends"]
+      - [08:00, "school_classroom",     "morning_lessons"]
+      - [12:00, "school_courtyard",     "lunch_play"]
+      - [13:00, "school_classroom",     "afternoon_lessons"]
+      - [16:00, "plaza_anywhere_random","running_with_friends"]
+      - [18:00, "home_residence_jin",   "dinner_with_parents"]
+      - [20:00, "home_residence_jin",   "sleep"]
+    bark_pool:
+      - "Look out!"
+      - "I'm gonna be a Musketeer like Volker!"
+      - "Sorry-mister, sorry-mister!"
+      - "Did you see Cid's new airship? It floated for like... TEN SECONDS!"
+      - "Mom says don't talk to outlaws. Are you an outlaw? You don't look like one."
+
+  - id: delivery_boy_bastok
+    name: Kestrel
+    zone: bastok_markets
+    position: [-2500, -1000, 100]
+    tier: 1_scripted
+    role: delivery
+    race: mithra
+    gender: f
+    schedule:
+      - [06:00, "post_office",        "pick_up_routes"]
+      - [07:00, "delivery_loop",      "morning_deliveries"]
+      - [12:00, "post_office",        "lunch_break"]
+      - [13:00, "delivery_loop",      "afternoon_deliveries"]
+      - [18:00, "post_office",        "drop_off_returns"]
+      - [19:00, "kestrel_home",       "evening_off"]
+      - [22:00, "kestrel_home",       "sleep"]
+    bark_pool:
+      - "Coming through, urgent post!"
+      - "If your name's on this letter, sign here."
+      - "Bastok Postal — fast as the wind, hopefully not as the rain."
+      - "Got a letter for an Old Bondrak — anyone seen him sober today?"

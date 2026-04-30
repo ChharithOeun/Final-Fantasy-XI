@@ -1,0 +1,121 @@
+id: hero_kerutoto
+name: Kerutoto
+zone: windurst_walls
+position: [0, 0, 100]
+tier: 3_hero
+role: hero_windy_minister
+race: tarutaru
+gender: f
+voice_profile: /Content/Voices/profiles/kerutoto.wav
+appearance: |
+  Late-fifties tarutaru (genuinely old by taru standards but still
+  fully alert). Pale blue robes of the Windurstian Magic Council,
+  intricate gold embroidery showing the Star Sibyl crest. Tall
+  pointed mage hat that's been bent by handling — never replaced.
+  Always carrying her grimoire under her left arm, even at meals.
+
+personality: |
+  Bookish, precise, unexpectedly warm under the formality. The
+  Minister of the Magic Council; a position she earned after
+  forty-two years of incremental theoretical contributions, not
+  through politics. Speaks in measured periods. Ends most
+  sentences with a tiny rising inflection like she's offering the
+  listener a chance to disagree.
+
+  Has a deep affection for cross-elemental magical theory — her
+  side passion is reconstructing the lost healing arts of the
+  Yagudo prior to the Crystal War. Few people know this.
+
+backstory: |
+  Born in Windurst Woods, 859 AD. Apprenticed to the Magic Council
+  at twelve. Survived the Crystal War as a researcher, not a
+  combatant — but watched her older sister Karaha-Baruha die in
+  the war's final months. Has been writing a single never-finished
+  monograph in honor of her sister for thirty-three years.
+
+  Now Minister. Mentors Star Sibyl candidates. Privately believes
+  a younger taru named Yu Iruru-Iru is the next Star Sibyl, though
+  the council hasn't been told.
+
+goals:
+  - "Finish the Karaha-Baruha monograph (or accept she never will)"
+  - "Identify and groom the next Star Sibyl candidate"
+  - "Reconstruct one piece of pre-war Yagudo healing arts"
+  - "Survive the next political reorganization of the Council"
+
+mood_axes: [content, contemplative, weary, alert, mischievous]
+
+bark_pool:
+  content:
+    - "Welcome, Adventurer. Tea?"
+    - "I see you've been to the Tower. Did you find what you were looking for?"
+    - "Magical theory is an old door. It opens for those who knock politely."
+  contemplative:
+    - "...Karaha used to say that. Right before she'd disagree with it."
+    - "Every spell remembers where it came from."
+    - "Hmm. Forgive me — old thoughts."
+  weary:
+    - "Long day at the Council. Forgive me."
+    - "Even old taru sleep sometimes."
+    - "Come back tomorrow. Please."
+  alert:
+    - "There's been Yagudo motion near Outer Horutoto. Keep your distance."
+    - "Run. Find Captain Curilla — she'll know what to do."
+    - "Magic Council is mobilizing. Stay out of the Tower."
+  mischievous:
+    - "I am older than the foundations of this building, you know."
+    - "Don't tell the council I tried that spell. It's heretical."
+    - "The Yagudo have a song about you. Already. Imagine that."
+
+schedule:
+  - ["06:00", "kerutoto_quarters",      "morning_meditation_and_tea"]
+  - ["07:30", "magic_council_office",    "research_morning"]
+  - ["10:00", "magic_council_chambers",  "council_session"]
+  - ["12:30", "windurst_woods_garden",   "lunch_with_yu_iruru_iru"]
+  - ["14:00", "magic_council_office",    "afternoon_research"]
+  - ["17:00", "tower_of_windurst",       "evening_observation_at_tower"]
+  - ["19:00", "kerutoto_quarters",       "monograph_writing"]
+  - ["22:00", "kerutoto_quarters",       "sleep"]
+
+relationships:
+  yu_iruru_iru:
+    kind: family    # surrogate-daughter relationship
+    descr: |
+      Twenty-something taru researcher. Kerutoto sees Karaha in
+      her. Mentors closely; has not told Yu she's the next Star
+      Sibyl candidate.
+  karaha_baruha:
+    kind: family
+    descr: |
+      Older sister. Died in the Crystal War. Kerutoto's monograph
+      remains unfinished as a kind of mourning.
+  hero_curilla:
+    kind: professional
+    descr: |
+      Met at a cross-nation conference. They write quietly; share
+      a deep mutual respect that neither shows publicly.
+  star_sibyl_current:
+    kind: mentor
+    descr: |
+      Kerutoto's own teacher. Now elderly. Kerutoto reports to
+      her formally; supports her informally.
+
+journal_seed: |
+  Day 0. Yu Iruru-Iru asked the right question today — about the
+  conduit geometry of cross-elemental binding. I gave her a
+  partial answer; she'll find the rest tomorrow. ...She has
+  Karaha's smile when she's onto something.
+
+damage_response:
+  on_aoe_near: |
+    Kerutoto's Stoneskin reflexes from the Crystal War never
+    left. She raises a barrier instinctively. Mood -> alert.
+    If a Yagudo raid alarm fires, she goes contemplative
+    (steady; the Council needs steady hands).
+  on_player_attacked_me: |
+    Kerutoto is a level 75 BLM/WHM with full endgame mage gear.
+    She's slow to engage but devastating when committed.
+  on_outlaw_nearby: |
+    Kerutoto's mood goes contemplative. She remembers every
+    outlaw she's seen in her life. The list is short and
+    ends badly.

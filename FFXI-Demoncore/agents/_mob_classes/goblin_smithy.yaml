@@ -1,0 +1,112 @@
+# Goblin Smithy — the canonical first boss-grade encounter for
+# new players in TUTORIAL_BASTOK_MINES.md. Demonstrates the
+# minimum boss recipe per BOSS_GRAMMAR.md (4 attacks, 3 phases).
+
+mob_class: goblin_smithy
+race: beastman_goblin
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/goblin_smithy.wav
+
+aligned_element: earth
+weak_to: wind
+strong_against: lightning
+
+# This is BOTH a mob class AND a tutorial-zone boss. We mark it
+# specially so the tutorial logic in bastok_layered_scene.py can
+# wire up the appropriate cinematic.
+tutorial_role: first_boss_encounter
+
+policy_onnx: /Content/AI/Policies/goblin_smithy_v1.onnx
+state_features:
+  - self_hp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - target_in_hammer_range
+  - has_other_goblins_nearby
+  - is_at_anvil
+  - daytime
+action_space:
+  - 0: melee_attack
+  - 1: hammer_slam          # cone, 4m, physical+stun (signature)
+  - 2: forge_strike          # line, 8m, fire-tinged earth
+  - 3: bomb_toss             # placed AOE 3m at target location
+  - 4: rally_goblins
+  - 5: retreat_to_anvil      # heals self if reaches anvil
+
+visible_health_archetype: mob_goblin
+level_range: [3, 7]
+
+# Boss recipe per BOSS_GRAMMAR.md — minimum tier (3 phases, 4 attacks)
+boss_recipe:
+  layer_1_body:
+    skeletal_mesh: /Game/Demoncore/Mesh/GoblinSmithy
+    visible_health_archetype: mob_goblin
+    kawaii_physics_chains:
+      - hammer_strap
+      - apron_tail
+
+  layer_2_repertoire:
+    - id: melee_attack       # standard
+    - id: hammer_slam        # cone, 4m, 1.5s cast, physical+stun
+    - id: forge_strike       # line, 8m, 2s cast, earth+fire
+    - id: bomb_toss          # placed AOE, 1.5s cast, 3m radius
+
+  layer_3_phases:
+    pristine:
+      hp_band: [0.66, 1.00]
+      attacks_available: [melee_attack, hammer_slam]
+      mood: gruff
+    bloodied:
+      hp_band: [0.33, 0.66]
+      attacks_available: [melee_attack, hammer_slam, forge_strike]
+      mood: gruff
+      visual_change: "Drops a small pile of nails — slight movement +5%"
+    broken:
+      hp_band: [0.0, 0.33]
+      attacks_available: [melee_attack, hammer_slam, forge_strike, bomb_toss]
+      mood: furious
+      visual_change: "Goblin staggers; bomb appears in left hand"
+
+  layer_4_critic_prompt: null    # no critic LLM at this scope
+
+  layer_5_cinematic:
+    entrance_sequencer: /Game/Cinematics/Tutorial/GoblinSmithy_Entrance
+    intro_voice_lines:
+      - "[Goblin laughter] Heh heh!"
+    defeat_player_won:
+      sequencer: /Game/Cinematics/Tutorial/GoblinSmithy_Defeat
+      voice_line: "[Goblin death cry]"
+      cid_off_camera_voice: "Now THAT was a chain. Welcome, kids."
+      reward: bronze_ore_x3 + 200_gil
+
+mood_axes: [gruff, fierce, furious]
+starting_mood: gruff
+
+bark_pool:
+  gruff:
+    - "[Goblin grunt]"
+    - "[hammer ring]"
+  fierce:
+    - "[Goblin laugh] Heh heh!"
+    - "[Goblin yell]"
+  furious:
+    - "[Goblin shriek]"
+    - "[Goblin roar of pain]"
+
+damage_response:
+  on_player_attacked_me: |
+    Goblin Smithy engages with Hammer Slam opener (cone telegraph
+    visible per AOE_TELEGRAPH.md). Player has half the cast time
+    to step out. New players will eat the first one; experienced
+    players step out by the second.
+  on_aoe_near: |
+    Goblin doesn't dodge. Mood -> furious.
+  on_outlaw_nearby: |
+    Goblins are the tutorial-zone hostile baseline. They engage
+    all players in the cave area regardless of outlaw status.
+
+# Worked encounter from TUTORIAL_BASTOK_MINES.md (minute 75-90):
+# 4-second cinematic entrance, 3 phases each with one new attack
+# unlocked, 4-second defeat cinematic with Cid's "Welcome, kids"
+# voice-over. Drops Bronze Ore (player can use this in the
+# tutorial-zone smithy quest).

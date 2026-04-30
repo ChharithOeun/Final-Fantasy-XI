@@ -1,0 +1,60 @@
+# Bee Soldier — wind-aligned aerial swarm.
+
+mob_class: bee_soldier
+race: wildlife
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/bee_soldier.wav
+
+aligned_element: wind
+weak_to: earth
+strong_against: water
+
+policy_onnx: /Content/AI/Policies/bee_soldier_v1.onnx
+state_features:
+  - self_hp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - other_bees_count_within_15m
+  - target_has_poison_resist_visible
+  - is_aggro
+action_space:
+  - 0: melee_sting          # single-target, applies poison
+  - 1: pollen_burst         # circle on self, 6m, applies sleep
+  - 2: hive_call             # signals 1-3 nearby bees to engage
+  - 3: dive_attack           # ranged 12m, line, knockback
+  - 4: queen_protection      # +50% def buff if Bee Queen NM nearby
+
+visible_health_archetype: wildlife_small  # smaller archetype with wing physics
+level_range: [8, 18]
+
+mood_axes: [content, alert, fierce]
+starting_mood: alert
+
+bark_pool:
+  alert:
+    - "[high-pitched buzz]"
+  content:
+    - "[low buzz]"
+  fierce:
+    - "[angry rapid buzz]"
+    - "[wing-clap]"
+
+damage_response:
+  on_player_attacked_me: |
+    Bee engages with melee sting (poison applied immediately).
+    Bee will use Pollen Burst when target HP is low (kill blow).
+    If Bee HP drops to 30%, calls Hive Call to bring reinforcements.
+  on_aoe_near: |
+    Bee scatters via Dive Attack to a different target.
+  on_outlaw_nearby: |
+    Bees are wildlife. They engage anything that approaches the
+    hive regardless of moral standing.
+
+# Bees are the introduction to AOE-poison play. New players learn:
+#   1. Bees apply poison on melee — keep your distance until you
+#      can interrupt them
+#   2. Pollen Burst is a sleep AOE — visible green pollen cloud
+#      gives ~0.8s warning to step out
+#   3. Bees come in groups; killing one fast prevents Hive Call
+# Visible-health: bees lose wing scales as they take damage,
+# eventually their flight pattern wobbles audibly.

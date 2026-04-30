@@ -1,0 +1,79 @@
+id: goblin_pickpocket
+name: Goblin Pickpocket
+zone: bastok_markets
+position: [0, -4500, 100]
+tier: 4_rl
+role: rl_mob
+race: beastman_goblin
+gender: n
+voice_profile: /Content/Voices/profiles/goblin_pickpocket.wav
+appearance: |
+  Standard FFXI goblin pickpocket model. Slight, hunched, mottled green
+  skin. Stained grey tunic with too many pockets. Always carries a
+  half-broken rusty dagger and a sack already bulging with stolen junk.
+
+# Tier 4 RL combat policy spec.
+# The policy is per-class, not per-instance — every Goblin Pickpocket
+# in the world shares this trained ONNX. Individuals differ only in
+# their HP/level (rolled at spawn time).
+mob_class: goblin_pickpocket
+
+# Pre-trained ONNX policy. See AI_WORLD_DENSITY.md Tier 4 section.
+# The training pipeline lives in repos/_combat_rl/training/goblin_pickpocket/.
+# Outputs an .onnx file here.
+policy_onnx: /Content/AI/Policies/goblin_pickpocket_v3.onnx
+
+# Input feature vector schema. Order matters — must match the trained
+# model's expected layout. Update both ends together.
+state_features:
+  - self_hp_normalized          # [0, 1] = current/max
+  - self_tp_normalized           # [0, 1]
+  - target_hp_normalized
+  - distance_to_target_cm
+  - distance_to_nearest_party_member_cm
+  - party_size                   # 1-6, normalized
+  - party_avg_level
+  - terrain_class                # one-hot: open, narrow, elevated, near_wall
+  - has_been_targeted_recently   # bool
+  - has_been_pickpocketed_recently # bool
+  - is_aggro                     # bool
+  - mood_alert_active            # bool, from event delta on player approach
+  - daytime                      # bool (goblins prefer night)
+
+# Action space. The policy outputs a probability over these IDs;
+# orchestrator samples and the action is dispatched to the LSB combat
+# system as if it were a scripted skill.
+action_space:
+  - 0: melee_attack
+  - 1: pickpocket_target            # signature ability — steals 1-50 gil
+  - 2: bomb_toss                    # AoE, 8m
+  - 3: flee_to_nearest_wall
+  - 4: hide_in_shadow               # +50% accuracy on next attack
+  - 5: signal_for_friends           # calls 1-3 nearby goblins
+  - 6: idle_observe                 # waits, accumulates "ambush" buff
+
+# Optional: starting mood lean (used by the mood event hooks even though
+# Tier 4 doesn't run reflection). When present, raises the agent's
+# initial mood for environmental triggers.
+mood_axes: [alert, content, fearful]
+starting_mood: alert
+
+bark_pool:
+  alert:
+    - "Heh heh heh!"
+    - "Got shiny? Goblin take!"
+  content:
+    - "Goblin happy. Goblin rich."
+    - "*counting coins* Heh heh."
+  fearful:
+    - "Help help! Big bad coming!"
+    - "Goblin run! Goblin run!"
+
+damage_response:
+  on_player_attacked_me: |
+    Standard combat — RL policy takes over.
+  on_outlaw_nearby: |
+    Mood -> content. Goblins recognize fellow criminals. May trade
+    rumors with outlaws for a bribe.
+  on_aoe_near: |
+    Mood -> fearful. Will probably flee unless cornered.

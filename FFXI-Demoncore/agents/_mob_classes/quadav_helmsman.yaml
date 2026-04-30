@@ -1,0 +1,74 @@
+# Quadav Helmsman — leader-rank lightning turtle.
+# Per MOB_CLASS_LIBRARY.md (Quadav family) + AOE_TELEGRAPH.md.
+# Used as one of the first mid-tier bosses for Korroloka Tunnel zones.
+
+mob_class: quadav_helmsman
+race: beastman_quadav
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/quadav_helmsman.wav
+
+# Affinity per MOB_RESISTANCES.md
+aligned_element: lightning
+weak_to: water
+strong_against: wind
+
+# RL policy per AI_WORLD_DENSITY.md Tier 4
+policy_onnx: /Content/AI/Policies/quadav_helmsman_v1.onnx
+state_features:
+  - self_hp_normalized
+  - self_tp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - distance_to_nearest_party_member_cm
+  - party_size
+  - party_avg_level
+  - terrain_class
+  - has_been_targeted_recently
+  - is_aggro
+  - has_other_quadav_nearby
+  - quadav_minelayer_present
+  - daytime
+action_space:
+  - 0: melee_attack
+  - 1: shield_bash         # cone, 4m, physical
+  - 2: scaled_mail         # +30% def buff on self for 30s
+  - 3: tortoise_stomp      # circle on self, 6m, physical+stun
+  - 4: thunder_thrust       # line, 12m, lightning element
+  - 5: rally_quadav        # signals adjacent Quadav to engage
+  - 6: retreat_to_mine_entrance
+
+visible_health_archetype: mob_quadav
+level_range: [18, 28]
+
+mood_axes: [content, alert, gruff, fierce]
+starting_mood: content
+
+bark_pool:
+  content:
+    - "[low quadav croak]"
+    - "[shell-click]"
+  alert:
+    - "[gruff Quadav speech] Intruder!"
+    - "[shell-click rapid]"
+  gruff:
+    - "[gruff Quadav speech] Off our land!"
+    - "[gruff Quadav speech] Helmet down!"
+  fierce:
+    - "[Quadav war cry]"
+    - "[gruff Quadav speech] FOR BEADEAUX!"
+
+damage_response:
+  on_aoe_near: |
+    Quadav Helmsman calls Scaled Mail on self if not already buffed.
+    Mood -> alert.
+  on_player_attacked_me: |
+    Standard combat — RL policy takes over. Will use Rally Quadav
+    if other Quadav are visible within 20m.
+  on_outlaw_nearby: |
+    Quadav don't distinguish outlaw players. They engage all humanoid
+    intruders the same way. Mood -> alert regardless.
+
+# Per BOSS_GRAMMAR.md, this class can be promoted to a boss by adding
+# a 5-layer recipe on top. Boss authors are encouraged to use this YAML
+# as the starting body+repertoire+RL-policy and override Layer 3 (phases),
+# Layer 4 (critic prompt), Layer 5 (cinematic) for boss-specific flavor.

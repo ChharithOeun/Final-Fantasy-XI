@@ -1,0 +1,82 @@
+# Yagudo Cleric — mob-side healer. The threat actor that
+# intervention-cancels player skillchains per INTERVENTION_MB.md.
+
+mob_class: yagudo_cleric
+race: beastman_yagudo
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/yagudo_cleric.wav
+
+aligned_element: water
+weak_to: lightning
+strong_against: fire
+
+policy_onnx: /Content/AI/Policies/yagudo_cleric_v1.onnx
+state_features:
+  - self_hp_normalized
+  - self_mp_normalized
+  - nearest_friendly_yagudo_hp_normalized
+  - distance_to_nearest_friendly_yagudo_cm
+  - target_hp_normalized
+  - target_mp_normalized
+  - friendly_skillchain_window_open
+  - enemy_skillchain_closing_on_friendly
+  - distance_to_attacker_cm
+  - silenced
+  - is_aggro
+  - daytime
+action_space:
+  - 0: cure_iii_friendly
+  - 1: banishga              # AOE light, donut, 8-16m
+  - 2: regen_friendly
+  - 3: paralyna_friendly
+  - 4: silena_friendly
+  - 5: melee_attack
+  - 6: intervention_cure_iv  # CRITICAL: when enemy chain about to MB
+                             # close on a friendly Yagudo
+  - 7: flee_to_yagudo_acolyte_group
+
+visible_health_archetype: mob_yagudo
+level_range: [20, 30]
+
+mood_axes: [alert, content, fearful, fierce]
+starting_mood: alert
+
+bark_pool:
+  alert:
+    - "[Yagudo chitter] Jhuu!"
+    - "[wing rustle]"
+  content:
+    - "[soft chitter, religious cadence]"
+  fearful:
+    - "[high-pitched Yagudo cry]"
+    - "[wing rapid-flap]"
+  fierce:
+    - "[Yagudo war chitter]"
+
+# CRITICAL: This is a mob-side healer per INTERVENTION_MB.md. The
+# RL policy is trained to recognize incoming enemy skillchain on a
+# friendly Yagudo and time Cure IV cast for intervention. When the
+# intervention succeeds, the cleric audibly shouts:
+intervention_callouts:
+  cure_intervention_succeeded:
+    - "[Yagudo voice] Cure burst!"
+    - "[triumphant Yagudo chitter]"
+
+damage_response:
+  on_friendly_yagudo_skillchain_about_to_be_closed: |
+    Yagudo Cleric IMMEDIATELY queues Cure IV on the targeted Yagudo
+    if MP > 30 and the cleric isn't silenced. This is the
+    intervention pipeline — successful cancellation of the player's
+    chain damage AND a 3x friendly cure on the targeted Yagudo
+    AND dual-cast unlock for the cleric for 30s.
+  on_silenced: |
+    Cleric switches to melee + waits for silence to wear. Becomes
+    a high-priority kill target for the player party (tellingly
+    obvious by the silence cue).
+  on_player_attacked_me: |
+    Cleric Cure IIIs self, then Banishga AOE if multiple players
+    are within 12m. Yagudo Acolytes nearby Rally to defend.
+
+# This is the mob the player party MUST learn to silence/kill first
+# in any Yagudo encounter. It's the readable threat actor that
+# embodies the mob-side intervention symmetry.

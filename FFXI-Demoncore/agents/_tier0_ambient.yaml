@@ -1,0 +1,88 @@
+# Tier 0 ambient wildlife — pure reactive, no LLM, no schedule.
+#
+# Each entry maps to a UE5 BehaviorTree asset (`/Game/AI/BT/<bt>`)
+# and a flee_radius_cm. The orchestrator's loader is extended (or a
+# small stamper script) to expand this file into one row per
+# placeholder in the agents table.
+
+agents:
+
+  # rats in the alley — dart away from footsteps
+  - id: rat_alley_1
+    name: rat
+    zone: bastok_markets
+    position: [-3500, -3000, 20]
+    tier: 0_reactive
+    role: rat
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Rat
+    flee_radius_cm: 250
+
+  - id: rat_alley_2
+    name: rat
+    zone: bastok_markets
+    position: [-3450, -3050, 20]
+    tier: 0_reactive
+    role: rat
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Rat
+    flee_radius_cm: 250
+
+  - id: rat_near_forge
+    name: forge rat
+    zone: bastok_markets
+    position: [3500, 3500, 20]
+    tier: 0_reactive
+    role: rat
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Rat
+    flee_radius_cm: 200
+
+  # pigeons over the plaza — boids flock
+  - id: pigeon_plaza_1
+    name: pigeon
+    zone: bastok_markets
+    position: [0, 0, 800]
+    tier: 0_reactive
+    role: pigeon
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Pigeon
+    flee_radius_cm: 400
+
+  - id: pigeon_plaza_2
+    name: pigeon
+    zone: bastok_markets
+    position: [300, 100, 850]
+    tier: 0_reactive
+    role: pigeon
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Pigeon
+    flee_radius_cm: 400
+
+  - id: pigeon_plaza_3
+    name: pigeon
+    zone: bastok_markets
+    position: [-200, 200, 820]
+    tier: 0_reactive
+    role: pigeon
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_Pigeon
+    flee_radius_cm: 400
+
+  # stray cat near stalls — opportunistic, slinks
+  - id: stray_cat_near_stalls
+    name: cat
+    zone: bastok_markets
+    position: [-2200, -2300, 40]
+    tier: 0_reactive
+    role: stray_cat
+    race: wildlife
+    gender: n
+    behavior_tree: /Game/AI/BT/Wildlife_StrayCat
+    flee_radius_cm: 150

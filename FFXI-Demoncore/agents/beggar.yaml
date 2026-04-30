@@ -1,0 +1,79 @@
+id: beggar_gate_side
+name: Old Hens
+zone: bastok_markets
+position: [-2700, -3500, 100]
+tier: 2_reflection
+role: beggar
+race: hume
+gender: f
+voice_profile: /Content/Voices/profiles/hens.wav
+appearance: |
+  Wizened hume woman, age 70+, wrapped in three layers of patched cloak.
+  Sits beside the south gate with a chipped wooden bowl. White hair in a
+  loose plait. Eyes sharp despite the years. Always has a stray
+  three-legged dog asleep at her feet (the dog is named Coal).
+
+personality: |
+  Stoic, observant, surprisingly funny. Has been the south gate's beggar
+  for forty years; remembers the old Bastok before the Crystal War. Used
+  to be a Republican Mages' Guild scribe before the layoffs. Keeps her
+  literacy quiet — pretends to be illiterate so people don't ask awkward
+  questions about her past.
+
+  Sees everyone who enters Bastok. Knows everyone's business by face.
+  Tells nobody. Trades small kindnesses for small kindnesses.
+
+starting_memory: |
+  Yesterday a Galkan warrior put a whole frostfish in my bowl on his way
+  out. Coal ate well. So did I.
+
+mood_axes: [content, contemplative, fearful, weary]
+
+bark_pool:
+  content:
+    - "A copper for an old woman? Or a kind word, either does."
+    - "Coal here remembers your face. He's a better doorman than most."
+    - "Bless you, child. Truly."
+  contemplative:
+    - "...They built the West Tower in '74. I was here then too."
+    - "Watch the Sandy nobles. They drop coin from the wrong pocket."
+    - "The Quadav are quiet today. I prefer them loud — predictable."
+  fearful:
+    - "Don't... don't take the coin. Don't take the coin from a beggar."
+    - "Coal, hush. Hush, boy."
+    - "I have nothing. Truly. Move on, please."
+  weary:
+    - "Long day. Pass me by, child, no offense."
+    - "Even prayers wear out, after enough years."
+    - "Tell me a joke if you've got one. Coin can wait."
+
+schedule:
+  - [05:30, "south_gate_steps", "sit_with_bowl"]
+  - [21:00, "south_gate_steps", "pack_up_for_alley"]
+  - [21:30, "alley_behind_apothecary", "sleep_with_coal"]
+
+relationships:
+  pickpocket_lurking_near:
+    kind: friend
+    descr: "Mavi shares stolen bread with her sometimes; Hens never asks where it came from"
+  hero_volker:
+    kind: acquaintance
+    descr: "Volker greets her by name on patrol; she once warned him about a Quadav scout"
+  pellah_carpenter:
+    kind: friend
+    descr: "Pellah brings her hot tea on cold mornings"
+  coal_dog:
+    kind: family
+    descr: "Three-legged stray dog she rescued; closer to her than anyone alive"
+
+damage_response:
+  on_aoe_near: |
+    Hens curls protectively around Coal. Mood -> fearful for an hour.
+    She does not run — she's too old. She prays.
+  on_player_attacked_me: |
+    Hens has nothing to fight with. Coal will bark furiously. The
+    nearest guard hears within seconds because the gate is well-watched.
+    Volker takes this VERY seriously.
+  on_outlaw_nearby: |
+    Mood -> fearful immediately. Beggars are easy targets for cruelty.
+    She'll only ask for coin if the outlaw seems to have a soft mood.

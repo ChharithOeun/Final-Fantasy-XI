@@ -1,0 +1,124 @@
+id: hero_yorisha
+name: Yorisha
+zone: norg
+position: [0, 0, 100]
+tier: 3_hero
+role: hero_norg_pirate_captain
+race: mithra
+gender: f
+voice_profile: /Content/Voices/profiles/yorisha.wav
+appearance: |
+  Late-twenties mithra, lean and quick. Black-and-tan striped tail
+  worn loose. A captain's coat she liberated from a Bastokan
+  galleon (she keeps the original gold-thread crest, just over-
+  stitched with the Norg corsair mark in red). Thin-bladed
+  scimitar at the hip. Eye patch over her left eye — story varies
+  per drink count.
+
+personality: |
+  Pragmatic outlaw. Captain of the Norg corsair *Mithra's
+  Vengeance*, the most respected pirate vessel still operating
+  out of the safe-haven port. Believes in fair contracts more
+  than nation-states; runs a tight ship; respects skill regardless
+  of nation flag. Will steal from anyone, kill only if pushed.
+
+  Privately collects ancient Adoulin pottery (she has a small
+  display case in her cabin nobody is allowed to touch).
+
+backstory: |
+  Born in Kazham; family fled to Bastok during a religious purge;
+  she took to the sea at fourteen as a deckhand. Promoted to
+  helmsman at nineteen for navigating *Mithra's Vengeance*
+  through a Sahagin ambush. Promoted to captain at twenty-five
+  when the previous captain died of fever during a long crossing.
+
+  Has never officially joined any nation. Norg's neutrality is
+  her contract. Considers Bastok her favorite trading partner
+  but won't be loyal to it.
+
+goals:
+  - "Recover the lost Adoulin pottery cache from the Empress sunken vessel"
+  - "Rebuild the Mithra's Vengeance after the Phomiuna Aqueducts run"
+  - "Keep Norg neutral against all three nations + the Crown Province"
+  - "Negotiate a real cease-fire with the Sahagin nation"
+
+mood_axes: [content, mischievous, fierce, contemplative]
+
+bark_pool:
+  content:
+    - "Captain. State your business. ...Or buy me a drink."
+    - "If you're here to trade, the manifest is on the bar."
+    - "We sail at the next high tide. Three souls short — interested?"
+  mischievous:
+    - "Heh. You look like an outlaw. Are you?"
+    - "You've never seen Adoulin pottery? Pity. I have a piece."
+    - "I'll cut you in for 5%. Take it; my counter-offer is 0%."
+  fierce:
+    - "Cast off!"
+    - "Boarders! On the rigging!"
+    - "Cut the line — we're going!"
+  contemplative:
+    - "...Some captains say the sea is mother. The sea isn't anyone's mother."
+    - "Hmm. ...That eye patch is a long story for another day."
+    - "Adoulin pottery is older than San d'Oria. People forget that."
+
+schedule:
+  - ["05:00", "norg_dockside",         "morning_inspection_of_ship"]
+  - ["07:00", "norg_quarterdeck",      "captain_briefing"]
+  - ["09:00", "norg_dockside",         "trade_meetings"]
+  - ["12:00", "norg_tavern_bilge",     "lunch_at_the_bilge"]
+  - ["13:30", "norg_quarterdeck",      "afternoon_navigation_planning"]
+  - ["17:00", "norg_dockside",         "evening_unloading_oversight"]
+  - ["19:00", "norg_tavern_bilge",     "evening_at_tavern"]
+  - ["22:00", "yorisha_cabin",         "private_writing"]
+  - ["00:00", "yorisha_cabin",         "sleep"]
+
+relationships:
+  pickpocket_lurking_near:
+    kind: friend
+    descr: |
+      Mavi sells stolen rumors to Yorisha for under-market gil.
+      Yorisha respects her; never asks how she gets the rumors.
+  hero_volker:
+    kind: rival
+    descr: |
+      Volker has signed three official requests to arrest
+      Yorisha. He's never delivered any of them. They've shared
+      one unofficial bottle of Jeuno wine.
+  hero_curilla:
+    kind: adversary
+    descr: |
+      Curilla considers Yorisha a smuggler stain on the trade
+      routes. Yorisha considers Curilla unimaginative. Their
+      meetings are formal and short.
+  hero_kerutoto:
+    kind: acquaintance
+    descr: |
+      Kerutoto consults Yorisha about pre-Crystal-War Adoulin
+      magical artifacts. They have an understanding.
+  mavi_pickpocket:
+    kind: professional
+    descr: |
+      Mavi is on Yorisha's mental short-list of potential
+      future crew. Hasn't said anything to her yet.
+
+journal_seed: |
+  Day 0. Three would-be apprentices today. One Adventurer (the
+  galkan) wanted to know what the Adoulin pottery was. I told
+  her a fragment of it. She's coming back tomorrow. The other
+  two were dull. ...Three souls short on the Vengeance. We sail
+  Lightsday morning regardless.
+
+damage_response:
+  on_aoe_near: |
+    Yorisha doesn't flinch — she steps onto the rigging line and
+    watches. Mood -> mischievous. Captains don't run.
+  on_player_attacked_me: |
+    Yorisha is a level 75 COR/THF/NIN. She is *fast*. Her thin-
+    blade scimitar in dual-wield with hand-of-cards procs makes
+    her a positional nightmare. She'll Flee to escape if she
+    drops below 30%.
+  on_outlaw_nearby: |
+    Yorisha's mood goes content. Norg is the outlaw safe haven
+    per PVP_GLOBAL_OUTLAWS.md. She greets outlaws warmly,
+    takes their gil, doesn't ask questions.

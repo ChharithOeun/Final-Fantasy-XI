@@ -1,0 +1,72 @@
+# Skeleton Warrior — undead, dark-aligned, weak to light.
+
+mob_class: skeleton_warrior
+race: beastman_quadav  # archetype placeholder; will get its own bone-chassis mesh
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/skeleton_warrior.wav
+
+aligned_element: dark
+weak_to: light
+strong_against: none      # skeletons are brittle to most physical types
+
+policy_onnx: /Content/AI/Policies/skeleton_warrior_v1.onnx
+state_features:
+  - self_hp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - target_facing_me
+  - other_skeletons_count_within_15m
+  - is_aggro
+  - has_been_held_by_undead_buster_recently
+  - daytime
+action_space:
+  - 0: melee_attack
+  - 1: bone_crusher          # line, 8m forward, physical
+  - 2: ravage                # cone, 6m forward, physical
+  - 3: drain_attack          # single-target HP drain
+  - 4: marrow_drain          # AOE 4m, drains HP from all targets within
+  - 5: shadow_bolt           # ranged dark-element, 18m
+  - 6: rally_undead
+
+visible_health_archetype: mob_quadav   # bipedal humanoid stand-in
+level_range: [25, 40]
+
+mood_axes: [content, alert, fierce]
+starting_mood: alert
+
+bark_pool:
+  alert:
+    - "[bone clatter]"
+    - "[low hollow groan]"
+  content:
+    - "[bone settle]"
+  fierce:
+    - "[guttural skeletal roar]"
+    - "[bone crack-clatter]"
+
+damage_response:
+  on_player_attacked_me: |
+    Skeleton engages with Bone Crusher line — their iconic line
+    AOE that punishes stacked-up parties. Will switch to Drain
+    Attack if its own HP drops below 30%.
+  on_aoe_near: |
+    Skeleton's bones rattle audibly when AOE hits nearby. They're
+    relatively brittle; physical AOE damage stages quickly.
+  on_outlaw_nearby: |
+    Undead don't care about morality. Aggro or no, regardless of
+    Honor.
+
+# Skeletons are the "undead lesson" mob. Players learn:
+#   1. Light-element spells (Banish/Banishga) do extra damage
+#   2. Skeleton drain attacks heal them — kill drain skeletons fast
+#   3. Skeleton rally calls bring more undead — clear them
+#      methodically; don't get surrounded
+# Visible-health stages on skeletons are unique:
+#   pristine: full skeleton, glowing eyes
+#   scuffed:  small bone chip; eye glow steady
+#   bloodied: arm bone visibly missing or broken
+#   wounded:  ribs broken; body visibly stumbling
+#   grievous: half the skeleton dropped; crawling
+#   broken:   skull only; can still bite
+# Light spells skip stages — Banishga fires can dust 3 skeletons
+# at once.

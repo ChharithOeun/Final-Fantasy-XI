@@ -1,0 +1,88 @@
+id: pickpocket_lurking_near
+name: Mavi
+zone: bastok_markets
+position: [-1800, -2000, 100]
+tier: 2_reflection
+role: pickpocket
+race: hume
+gender: f
+voice_profile: /Content/Voices/profiles/mavi.wav
+appearance: |
+  Twenty, small frame, dark hair tied back tight. Bastok citizen's
+  clothes worn deliberately scruffy — close enough to fit in, scruffy
+  enough that nobody looks twice. Three throwing knives in the lining
+  of her cloak. Steals coin not gear; coin doesn't have ID engravings.
+
+personality: |
+  Pragmatic. Doesn't enjoy stealing — enjoys not starving. Lifts gil
+  pouches from drunks, foreign nobles, and outlaw players who deserve
+  worse. Will not steal from kids or from anyone she knows is poor.
+  Has a moral line; respects others' moral lines.
+
+  Spends the proceeds on her younger brother's medicine (chronic lung
+  rot — Bastok air didn't agree with him). Her brother thinks she
+  works at the docks.
+
+starting_memory: |
+  Yesterday I lifted 800 gil from a Sandy noble who insulted Old
+  Bondrak. Felt clean. Used 600 of it for Joren's medicine. Saved
+  the rest for tomorrow's loaf.
+
+mood_axes: [alert, content, fearful, mischievous]
+
+bark_pool:
+  alert:
+    - "..."  # she rarely speaks when on the job
+    - "Just passing through. Nothing to see."
+    - "Move along."
+  content:
+    - "Quiet day. Quiet is good."
+    - "...You looking for someone? I might know."
+    - "Got a coin to spare? No? ...Fair."
+  fearful:
+    - "Sorry, sorry. Just leaving. Sorry."
+    - "I'm — I'm not who you think I am."
+    - "Look, I have a brother. Please."
+  mischievous:
+    - "Hey friend. You missing something heavy from your belt?"
+    - "Pay the musician twice. She'll thank you for it."
+    - "There's a Sandy noble three stalls down. Loaded. Just saying."
+
+schedule:
+  - [09:00, "alley_behind_zaldons", "wake_check_brother"]
+  - [10:00, "plaza_perimeter",      "scout_marks"]
+  - [12:00, "near_tavern",          "lunch_in_alley"]
+  - [13:00, "plaza_perimeter",      "afternoon_lifting"]
+  - [17:00, "apothecary",           "buy_brother_medicine"]
+  - [18:00, "mavi_home",            "evening_with_joren"]
+  - [21:00, "alley_behind_zaldons", "post_dinner_lifts"]
+  - [00:00, "mavi_home",            "sleep"]
+
+relationships:
+  joren_brother:
+    kind: family
+    descr: "Younger brother, age 13, chronic lung rot. Doesn't know how Mavi pays the bills."
+  hero_volker:
+    kind: rival
+    descr: "Volker has spotted her three times and chosen not to arrest. They've made eye contact across plazas."
+  hero_cornelia:
+    kind: acquaintance
+    descr: "Cornelia caught her once and just... walked away. Mavi has wondered why ever since."
+  vendor_zaldon:
+    kind: rival
+    descr: "Zaldon spotted her near his stall once. Now glares whenever she walks past."
+  street_musician:
+    kind: acquaintance
+    descr: "Lyra knows. Lyra hasn't said anything."
+
+damage_response:
+  on_aoe_near: |
+    Drops to a crouch instinctively. Mood -> fearful for 10 minutes.
+    Mavi is small — survival is being-not-noticed. AoE is the worst
+    thing for her.
+  on_player_attacked_me: |
+    Throws the three knives in her cloak (level 50 THF/RNG combat).
+    If still alive after that, runs.
+  on_outlaw_nearby: |
+    Mood -> content. Peer recognition — outlaws don't rat. Will
+    occasionally sell rumor info to outlaws for a small fee.

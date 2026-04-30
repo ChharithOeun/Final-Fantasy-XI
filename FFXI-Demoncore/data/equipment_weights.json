@@ -1,0 +1,152 @@
+{
+  "_comment": "Sample equipment weights for WEIGHT_PHYSICS.md. LSB items.sql will gain a `weight` column populated from this file. One weight point ~ 250g real-world equivalent. Values are tuning bait — playtest will iterate.",
+
+  "weapons_one_handed": {
+    "bronze_sword":      {"weight": 3,  "tier": "early",  "dmg_baseline": 8},
+    "mythril_sword":     {"weight": 5,  "tier": "mid",    "dmg_baseline": 18},
+    "joyeuse":           {"weight": 10, "tier": "high",   "dmg_baseline": 28, "notes": "lightened relic"},
+    "curtana":           {"weight": 14, "tier": "endgame","dmg_baseline": 38, "notes": "stationary +acc bonus shines here"},
+    "excalibur":         {"weight": 18, "tier": "mythic", "dmg_baseline": 50, "notes": "heavy, devastating, accuracy-monster on stationary"},
+    "thief_knife":       {"weight": 2,  "tier": "high",   "dmg_baseline": 14},
+    "wedding_dagger":    {"weight": 1,  "tier": "any",    "dmg_baseline": 6, "notes": "ceremonial, for THF flavor"}
+  },
+
+  "weapons_two_handed": {
+    "wooden_staff":      {"weight": 3,  "tier": "early",  "dmg_baseline": 6},
+    "octave_staff":      {"weight": 12, "tier": "high",   "dmg_baseline": 24, "notes": "BLM endgame; balanced weight for cast tax"},
+    "spharai_greataxe":  {"weight": 32, "tier": "mythic", "dmg_baseline": 75, "notes": "WAR/MNK relic; staggering attack delay"},
+    "aegis_lance":       {"weight": 28, "tier": "endgame","dmg_baseline": 60},
+    "kusanagi":          {"weight": 22, "tier": "mythic", "dmg_baseline": 65, "notes": "SAM relic; fast-ish for two-handed"}
+  },
+
+  "weapons_ranged": {
+    "selfbow":           {"weight": 2,  "tier": "early",  "dmg_baseline": 8},
+    "yew_longbow":       {"weight": 7,  "tier": "mid",    "dmg_baseline": 20},
+    "yoichinoyumi":      {"weight": 14, "tier": "mythic", "dmg_baseline": 50, "notes": "RNG relic; snapshot reduces effective weight in motion"}
+  },
+
+  "armor_body": {
+    "cotton_doublet":    {"weight": 4,  "tier": "early",  "defense": 5},
+    "leather_vest":      {"weight": 8,  "tier": "early",  "defense": 12},
+    "beetle_harness":    {"weight": 10, "tier": "mid",    "defense": 22},
+    "mythril_cuirass":   {"weight": 22, "tier": "high",   "defense": 48, "notes": "WAR/PLD core piece"},
+    "scorpion_harness":  {"weight": 12, "tier": "high",   "defense": 35, "notes": "THF/BRD/RNG light option"},
+    "shadow_robe":       {"weight": 6,  "tier": "high",   "defense": 28, "notes": "BLM/BLM-RDM cast tax minimization"},
+    "adaman_cuirass":    {"weight": 48, "tier": "mythic", "defense": 95, "notes": "DRK/PLD endgame; severe movement penalty"},
+    "kirin_osode":       {"weight": 16, "tier": "endgame","defense": 60, "notes": "perfectly balanced; fits any DD that wants both"}
+  },
+
+  "armor_head": {
+    "bronze_cap":        {"weight": 2,  "tier": "early",  "defense": 3},
+    "mythril_sallet":    {"weight": 11, "tier": "high",   "defense": 25},
+    "shadow_hat":        {"weight": 4,  "tier": "high",   "defense": 18, "notes": "BLM"},
+    "adaman_helmet":     {"weight": 28, "tier": "mythic", "defense": 60},
+    "scorpion_mask":     {"weight": 6,  "tier": "high",   "defense": 22, "notes": "stealth jobs"}
+  },
+
+  "armor_legs": {
+    "cotton_pants":      {"weight": 3,  "tier": "early",  "defense": 4},
+    "beach_subligar":    {"weight": 2,  "tier": "any",    "defense": 1, "notes": "joke gear; weight floor for emergency dashes"},
+    "mythril_breeches":  {"weight": 14, "tier": "high",   "defense": 30},
+    "adaman_subligar":   {"weight": 28, "tier": "mythic", "defense": 65}
+  },
+
+  "armor_feet": {
+    "leather_highboots": {"weight": 4,  "tier": "early",  "defense": 6},
+    "rasetsu_sune-ate":  {"weight": 8,  "tier": "high",   "defense": 18, "notes": "SAM/WAR mid-weight"},
+    "adaman_sollerets":  {"weight": 16, "tier": "mythic", "defense": 35}
+  },
+
+  "armor_hands": {
+    "leather_gloves":    {"weight": 2,  "tier": "early",  "defense": 3},
+    "mythril_gauntlets": {"weight": 10, "tier": "high",   "defense": 22},
+    "shadow_gloves":     {"weight": 3,  "tier": "high",   "defense": 14, "notes": "BLM cast tax"},
+    "adaman_gauntlets":  {"weight": 22, "tier": "mythic", "defense": 50}
+  },
+
+  "armor_back": {
+    "scarlet_cape":      {"weight": 2,  "tier": "any",    "defense": 0, "notes": "cosmetic + +stat"},
+    "ducal_aketon":      {"weight": 4,  "tier": "high",   "defense": 8},
+    "amalric_cloak":     {"weight": 8,  "tier": "endgame","defense": 18, "notes": "good for casters"}
+  },
+
+  "shield": {
+    "bronze_shield":     {"weight": 5,  "tier": "early",  "defense": 8},
+    "viking_shield":     {"weight": 18, "tier": "mid",    "defense": 25, "notes": "PLD core piece"},
+    "aegis":             {"weight": 32, "tier": "mythic", "defense": 70, "notes": "PLD relic; trades movement for survival"},
+    "ochain":            {"weight": 38, "tier": "mythic", "defense": 80, "notes": "PLD endgame; near-walking pace baseline"}
+  },
+
+  "accessories": {
+    "_comment": "Jewelry is mostly weightless. The slot is about utility, not encumbrance.",
+    "wedding_ring":      {"weight": 0,  "tier": "any",    "notes": "0 weight; +HP regen"},
+    "ear_pendant":       {"weight": 0,  "tier": "any"},
+    "gem_of_the_east":   {"weight": 0,  "tier": "endgame","notes": "+15% movement speed"}
+  },
+
+  "spell_weights": {
+    "_comment": "Effective casting weight, paid once per cast. Stacks with gear weight in the cast formula.",
+    "cure":              {"weight": 4},
+    "cure_ii":           {"weight": 8},
+    "cure_iii":          {"weight": 14},
+    "cure_iv":           {"weight": 20},
+    "cure_v":            {"weight": 30},
+    "fire":              {"weight": 6},
+    "fira":              {"weight": 10},
+    "firaga":            {"weight": 14},
+    "firaga_ii":         {"weight": 18},
+    "firaga_iii":        {"weight": 22},
+    "comet":             {"weight": 48, "notes": "endgame nuke; massive cast tax balanced by damage"},
+    "drain":             {"weight": 12, "notes": "reveals target HP for 2s"},
+    "aspir":             {"weight": 6},
+    "raise":             {"weight": 24},
+    "raise_iii":         {"weight": 36},
+    "reraise":           {"weight": 36, "notes": "buff cast; unique because heavy yet pre-cast"},
+    "haste":             {"weight": 8},
+    "slow":              {"weight": 8},
+    "gravity":           {"weight": 12, "notes": "the bottom-line slow; +50% effective weight on target"},
+    "stun":              {"weight": 10},
+    "scan":              {"weight": 4, "notes": "BLU60/SCH40; reveals target HP/MP for 5s"},
+    "utsusemi_ichi":     {"weight": 6,  "notes": "NIN seal sequence; sign-time cost"},
+    "utsusemi_ni":       {"weight": 10},
+    "utsusemi_san":      {"weight": 16},
+    "katon_ichi":        {"weight": 6},
+    "katon_san":         {"weight": 18}
+  },
+
+  "modifier_buffs": {
+    "_comment": "Buffs/songs/abilities that adjust effective weight. The character's literal gear weight stays the same; the weight formula sees a different value.",
+    "haste":               {"effective_weight_mult": 0.80, "notes": "-20% effective weight"},
+    "haste_ii":            {"effective_weight_mult": 0.70},
+    "haste_iii":           {"effective_weight_mult": 0.60},
+    "mages_ballad_i":      {"effective_weight_mult": 0.92},
+    "mages_ballad_ii":     {"effective_weight_mult": 0.84},
+    "march_i":             {"effective_weight_mult": 0.95},
+    "march_ii":            {"effective_weight_mult": 0.90},
+    "march_iii":           {"effective_weight_mult": 0.85},
+    "mazurka":             {"effective_weight_mult": 0.75, "notes": "mounted; replaces +20% mounted penalty"},
+    "hermes_quencher":     {"effective_weight_mult": 0.90},
+    "mantra":              {"effective_weight_mult": 0.75, "notes": "MNK self only"},
+    "flee":                {"effective_weight_mult": 0.10, "notes": "THF 60s; near-instant"},
+
+    "gravity":             {"effective_weight_mult": 1.50, "notes": "the canonical heavy debuff"},
+    "slow":                {"effective_weight_mult": 1.25},
+    "slow_ii":             {"effective_weight_mult": 1.50},
+    "heavy":               {"effective_weight_mult": 1.35, "notes": "earth-element proc"},
+    "encumber":            {"effective_weight_mult": 1.10, "notes": "stack debuff; up to 5x"},
+    "mounted_no_mazurka":  {"effective_weight_mult": 1.20}
+  },
+
+  "_validation": {
+    "weight_unit": "1 weight point ≈ 250g real-world equivalent",
+    "naked_galkan_baseline": 5,
+    "naked_tarutaru_baseline": 1,
+    "encumbered_threshold": 200,
+    "very_light_band": [0, 30],
+    "light_band": [30, 60],
+    "medium_band": [60, 100],
+    "heavy_band": [100, 150],
+    "very_heavy_band": [150, 200],
+    "encumbered_band": [200, "infinity"]
+  }
+}

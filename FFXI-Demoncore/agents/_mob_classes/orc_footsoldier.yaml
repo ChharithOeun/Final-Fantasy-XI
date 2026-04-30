@@ -1,0 +1,68 @@
+# Orc Footsoldier — front-line fire-aligned brawler.
+
+mob_class: orc_footsoldier
+race: beastman_orc
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/orc_footsoldier.wav
+
+aligned_element: fire
+weak_to: ice
+strong_against: wind
+
+policy_onnx: /Content/AI/Policies/orc_footsoldier_v1.onnx
+state_features:
+  - self_hp_normalized
+  - self_tp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - has_aggro_on_tank
+  - tank_present
+  - other_orcs_count_within_15m
+  - daytime
+action_space:
+  - 0: melee_attack
+  - 1: cleaver               # line, 8m, physical+heavy hitter
+  - 2: blood_rage             # +30% attack +20% acc, -50% defense, 30s
+  - 3: tomahawk              # ranged single-target throw
+  - 4: gallant_charge         # short dash + line knockback, 6m
+  - 5: rally_orcs            # signals adjacent Orcs to engage
+
+visible_health_archetype: mob_orc
+level_range: [10, 20]
+
+mood_axes: [content, gruff, fierce, furious]
+starting_mood: gruff   # default Orc disposition is hostile
+
+bark_pool:
+  gruff:
+    - "[deep guttural grunt]"
+    - "[chest beat]"
+  fierce:
+    - "[Orc war cry]"
+    - "[guttural yell] HRRRR!"
+  furious:
+    - "[bellowing roar]"
+    - "[guttural yell] DIE!"
+  content:
+    - "[heavy breathing, watching]"
+
+damage_response:
+  on_player_attacked_me: |
+    Orc engages immediately. RL policy decides Cleaver vs charge
+    based on distance + tank presence. Will pop Blood Rage at
+    bloodied stage — the +30/+20 vs -50 def trade is famous Orc
+    behavior; the 50% defense penalty makes them an obvious
+    kill target while raging.
+  on_aoe_near: |
+    Orcs don't dodge. They charge the source. Mood -> furious.
+  on_outlaw_nearby: |
+    Orcs respect strength. An outlaw with high reputation may
+    even get a brief content-mood pause before combat starts.
+    Otherwise: full hostile engagement.
+
+# Orc Footsoldiers are the "first real combat encounter" mob class
+# for new players in zones like Davoi outskirts. Their Blood Rage
+# is the textbook example of the visible-health-system principle:
+# an Orc in Blood Rage is visually wreathed in red mist, audibly
+# breathing harder, and taking 1.5x damage. The player learns to
+# read the mist and time the kill.

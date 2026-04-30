@@ -1,0 +1,77 @@
+# Tonberry Stalker — slow, lethal, terrifying. The iconic FFXI
+# "knife and lantern" mob. Appears in mid-tier dungeons.
+
+mob_class: tonberry_stalker
+race: beastman_tonberry
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/tonberry_stalker.wav
+
+aligned_element: dark
+weak_to: light
+strong_against: none      # Tonberries are uniquely resistant to most elements
+
+policy_onnx: /Content/AI/Policies/tonberry_stalker_v1.onnx
+state_features:
+  - self_hp_normalized
+  - self_tp_normalized
+  - target_hp_normalized
+  - target_kills_logged    # count of tonberries this player has killed
+                            # (THIS IS WHY EVERYONE'S GRUDGE IS SCARY)
+  - distance_to_target_cm
+  - target_facing_away
+  - has_aggro_on_player
+  - daytime
+action_space:
+  - 0: melee_attack         # the knife. devastating single-target
+  - 1: everyones_grudge     # signature; damage scales with kills_logged
+  - 2: throat_stab          # critical-strike chance massively increased
+                             # if target_facing_away
+  - 3: trembling            # short stun + slow on melee target
+  - 4: lantern_glow         # passive — already on by default; visual cue
+  - 5: stalker_pursuit      # slow but inexorable; never gives up
+
+visible_health_archetype: mob_tonberry
+level_range: [30, 45]
+
+mood_axes: [contemplative, fierce, gruff]
+starting_mood: contemplative
+
+bark_pool:
+  contemplative:
+    - "[slow shuffling]"
+    - "[muffled whisper... unintelligible]"
+    - "[lantern creak]"
+  fierce:
+    - "[whispered] Murderer..."
+    - "[whispered] You..."
+  gruff:
+    - "[shrill cry cut short]"
+    - "[knife scrape]"
+
+damage_response:
+  on_aoe_near: |
+    Tonberry doesn't flinch. Continues stalking. Mood -> fierce.
+    The lantern glow brightens slightly with each AOE survived.
+  on_player_attacked_me: |
+    Tonberry never breaks pursuit. Will follow the player across
+    zones if not killed (though they can't follow zone-changes —
+    canonical FFXI). The Stalker variant fires Everyone's Grudge
+    if the player has any tonberry kills logged. The damage scales
+    with the player's tonberry kill count — a player who has slain
+    100 tonberries is risking ~9000 damage in a single grudge proc.
+  on_outlaw_nearby: |
+    Tonberries don't care about outlaw status. They care about
+    the kill log. An outlaw with lots of tonberry kills is the
+    same priority as a non-outlaw with the same count.
+
+# Visible-health stage progression for Tonberries is unusual: they
+# don't "wound" visibly the same way humanoids do. Instead:
+#   pristine: lantern dim
+#   scuffed:  lantern slight flicker
+#   bloodied: lantern flicker frequent + knife trembling
+#   wounded:  lantern bright + audibly muttering kill-count
+#   grievous: lantern blinding + Everyone's Grudge cooldown halved
+#   broken:   lantern flickers between bright and dark; knife unsteady
+#
+# The lantern is the HP bar. Players who learn to read the lantern
+# brightness know how close the kill is.

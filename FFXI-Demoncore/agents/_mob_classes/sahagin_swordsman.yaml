@@ -1,0 +1,62 @@
+# Sahagin Swordsman — water-aligned amphibious melee.
+
+mob_class: sahagin_swordsman
+race: beastman_quadav  # closest race-archetype; sahagin uses similar skeleton + tail
+gender: n
+voice_profile_stock: /Content/Voices/StockMobs/sahagin_swordsman.wav
+
+aligned_element: water
+weak_to: lightning
+strong_against: fire
+
+policy_onnx: /Content/AI/Policies/sahagin_swordsman_v1.onnx
+state_features:
+  - self_hp_normalized
+  - self_tp_normalized
+  - target_hp_normalized
+  - distance_to_target_cm
+  - target_in_water         # bonus when player is in/near water
+  - other_sahagin_count_within_15m
+  - is_aggro
+  - underwater_or_surface
+action_space:
+  - 0: melee_attack
+  - 1: lariat               # cone, 5m forward
+  - 2: maelstrom            # donut around self, 4-12m, water element
+  - 3: water_breath          # line, 14m forward, water element
+  - 4: tail_whip             # 360 spin, 3m, physical+stun
+  - 5: dive_to_water         # repositions to nearest water if available
+  - 6: rally_sahagin
+
+visible_health_archetype: mob_quadav   # similar archetype (humanoid biped)
+level_range: [22, 35]
+
+mood_axes: [content, alert, fierce]
+starting_mood: alert
+
+bark_pool:
+  alert:
+    - "[low fish-throat hiss]"
+  content:
+    - "[wet breathing]"
+  fierce:
+    - "[Sahagin war cry, throaty]"
+
+damage_response:
+  on_player_attacked_me: |
+    Sahagin engages with Lariat opener. Water Breath if target
+    has water-resistance gear visible. Will use Dive to Water
+    if HP drops below 50% AND water source within 30m — making
+    Sahagin a "kite to water" boss in coastal zones.
+  on_aoe_near: |
+    Sahagin shrugs water-element AOE (their affinity). Mood
+    shifts to fierce when they take fire-element damage (their weak).
+  on_outlaw_nearby: |
+    Sahagin don't distinguish outlaws; engage all surface-folk.
+
+# Sahagin are the "water lesson" mob. Players in zones like
+# Sea Serpent Grotto learn that:
+#   1. Sahagin can dive into water to break aggro
+#   2. Their water-element resistance shrugs off fire/water chains
+#   3. Their Maelstrom AOE has visible water-droplet effect from
+#      ~3m before launch (the Niagara fluid sim is the AOE telegraph)

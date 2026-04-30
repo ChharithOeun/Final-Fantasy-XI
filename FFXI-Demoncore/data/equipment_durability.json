@@ -1,0 +1,155 @@
+{
+  "_comment": "Durability schema per EQUIPMENT_WEAR.md. LSB items.sql will gain `durability_max` + `wear_rate` columns. Tier defaults shown here; per-item overrides for relics/mythics. Wear rates from the doc — tuning bait, will iterate in playtest.",
+
+  "tier_defaults": {
+    "early": {
+      "durability_max":     100,
+      "weapon_wear_rate":   0.10,
+      "armor_wear_rate":    0.05,
+      "focus_wear_rate":    0.08,
+      "repair_cost_gil_per_max": 50,
+      "repairable_by_tiers": ["repair_kit", "npc_apprentice", "npc_master", "player_smithing_5+"],
+      "notes": "lvl 1-30 gear; cheap to repair, fragile to use"
+    },
+    "mid": {
+      "durability_max":     300,
+      "weapon_wear_rate":   0.10,
+      "armor_wear_rate":    0.04,
+      "focus_wear_rate":    0.07,
+      "repair_cost_gil_per_max": 200,
+      "repairable_by_tiers": ["repair_kit", "npc_apprentice", "npc_master", "player_smithing_25+"],
+      "notes": "lvl 30-50 gear; mythril, beetle, leather upgrade tier"
+    },
+    "high": {
+      "durability_max":     800,
+      "weapon_wear_rate":   0.08,
+      "armor_wear_rate":    0.03,
+      "focus_wear_rate":    0.05,
+      "repair_cost_gil_per_max": 800,
+      "repairable_by_tiers": ["npc_master", "player_smithing_50+"],
+      "notes": "lvl 50-65 gear; scorpion, shadow, beetle-king tier"
+    },
+    "endgame": {
+      "durability_max":    2000,
+      "weapon_wear_rate":   0.06,
+      "armor_wear_rate":    0.02,
+      "focus_wear_rate":    0.04,
+      "repair_cost_gil_per_max": 5000,
+      "repairable_by_tiers": ["npc_master", "player_smithing_75+"],
+      "notes": "lvl 65-75 gear; kirin, adaman tier; significant gil cost per repair"
+    },
+    "mythic": {
+      "durability_max":    5000,
+      "weapon_wear_rate":   0.03,
+      "armor_wear_rate":    0.01,
+      "focus_wear_rate":    0.02,
+      "repair_cost_gil_per_max": 50000,
+      "repairable_by_tiers": ["master_npc_only", "player_smithing_99_mastery_5"],
+      "notes": "Excalibur, Spharai, Yoichinoyumi tier; 50K+ gil per repair, master NPCs only"
+    }
+  },
+
+  "death_penalty": {
+    "_comment": "Per HARDCORE_DEATH.md integration",
+    "level_1_to_89": "-25% durability on all equipped pieces",
+    "level_90_to_98": "-40% durability on all equipped pieces + 2-day Reraise lockout",
+    "level_99": "100% durability LOSS — all gear unusable until repaired"
+  },
+
+  "consumables": {
+    "repair_kit_basic": {
+      "tier": "early",
+      "restores_pct": 25,
+      "max_per_use_per_piece": 1,
+      "cost_gil": 100,
+      "notes": "Universal first-aid; sold by general-goods vendors; works on any tier"
+    },
+    "repair_kit_advanced": {
+      "tier": "high",
+      "restores_pct": 50,
+      "max_per_use_per_piece": 1,
+      "cost_gil": 800,
+      "notes": "Available only after Genkai 1 cleared"
+    },
+    "repair_hammer": {
+      "tier": "any",
+      "restores_pct": "varies_by_crafter_mastery",
+      "max_per_use_per_piece": 1,
+      "cost_gil": "crafted_only",
+      "notes": "Crafted by smithing, leatherworking, etc; consumed on use; restore amount tied to crafter's mastery (80% at mastery 0, 95% at mastery 3, 100%+crit at mastery 5)"
+    }
+  },
+
+  "repair_npc_capabilities": {
+    "_comment": "NPCs that can repair gear, by tier they unlock at their progression level.",
+    "voinaut_bastok": {
+      "specialty": "smithy",
+      "tier_unlocks": {
+        "60": ["bronze", "leather", "cotton", "wooden"],
+        "65": ["mythril", "beetle"],
+        "70": ["adaman", "scale_armor"]
+      }
+    },
+    "pellah_bastok": {
+      "specialty": "carpentry",
+      "tier_unlocks": {
+        "60": ["bronze", "leather", "cotton", "wooden", "cloth"],
+        "65": ["mythril", "banded_mail", "scale_armor"],
+        "75": ["one_master_recipe_per_story_unlock"]
+      }
+    },
+    "pelinaut_sandy": {
+      "specialty": "leather + cloth",
+      "tier_unlocks": {
+        "60": ["leather", "cotton", "cloth", "scale_armor"],
+        "70": ["scorpion", "noble_robes", "ducal_aketon"]
+      }
+    },
+    "mihli_windy": {
+      "specialty": "robes + foci",
+      "tier_unlocks": {
+        "60": ["cotton", "cloth", "wooden_staff"],
+        "65": ["scholar_robes", "octave_staff"],
+        "70": ["amalric_cloak"]
+      }
+    },
+    "_master_npcs": {
+      "_comment": "Master-NPC-only — relic / mythic / empyrean gear",
+      "cid_bastok": {
+        "specialty": "airship + relic-tier weapons",
+        "repairs": ["excalibur", "joyeuse", "spharai_greataxe", "kusanagi"],
+        "cost_min": 50000
+      },
+      "volker_bastok": {
+        "specialty": "musketeer-grade",
+        "repairs": ["mythril_musketeer_set", "republican_brigade_blade"],
+        "cost_min": 30000
+      },
+      "maat_jeuno": {
+        "specialty": "Genkai-tier MNK",
+        "repairs": ["maats_cap", "ifrit_band", "carbuncle_ring"],
+        "cost_min": 0,
+        "notes": "Refuses payment; only repairs if player has cleared Genkai 5 and mood is content toward player"
+      },
+      "yoran_oran_windy": {
+        "specialty": "Star Sibyl jewelry",
+        "repairs": ["star_sibyl_ring", "star_sibyl_amulet"],
+        "cost_min": 80000
+      },
+      "yorisha_norg": {
+        "specialty": "corsair-grade weapons",
+        "repairs": ["pirates_pistol", "death_penalty"],
+        "cost_min": 25000,
+        "notes": "Will repair anything for outlaw players (the loophole)"
+      }
+    }
+  },
+
+  "_validation": {
+    "wear_rate_range": "0.001-0.20 per use action",
+    "durability_max_range": [50, 5000],
+    "repair_cost_range_gil": [50, 80000],
+    "death_penalty_lvl_99": "complete unequip; repair required",
+    "mastery_5_crit_repair": "10% chance to add +5% to durability_max"
+  }
+}

@@ -1,0 +1,230 @@
+# Canonical voice-callout vocabulary for skillchains, magic bursts, and the
+# 3x ailment-amplification mechanic.
+#
+# Per AUDIBLE_CALLOUTS.md. The chatbox stays silent during combat; this is
+# the spoken language instead. Higgs Audio v2 generates each line per
+# voice profile (player or NPC) so 6,000 NPCs can each shout in their own
+# voice without authoring overhead.
+#
+# Each entry has variants — the engine picks one based on the speaker's
+# current mood (per MOOD_SYSTEM.md). A mischievous Bondrak yells "DARKNESS!"
+# triumphantly; a furious Maat snarls "ENOUGH!".
+
+# ---------------------------------------------------------------------------
+# CHAIN OPENERS — first WS lands; chain marker is on the target
+# ---------------------------------------------------------------------------
+chain_open:
+  default: ["Skillchain open!", "Setting up — close on me!", "Combo's hot!"]
+  mood_alert:    ["Skillchain open!", "Open — close NOW!"]
+  mood_furious:  ["OPEN! GO!"]
+  mood_content:  ["Skillchain open — pick it up."]
+  mood_mischievous: ["Heh — open. Who's coming?"]
+
+# ---------------------------------------------------------------------------
+# LEVEL-1 CLOSERS — element name shouted on detonation
+# ---------------------------------------------------------------------------
+level_1_close:
+  liquefaction:
+    default:    ["Closing — Liquefaction!", "Liquefaction!"]
+    mood_furious: ["LIQUEFACTION!"]
+  induration:
+    default:    ["Closing — Induration!", "Induration!"]
+  reverberation:
+    default:    ["Closing — Reverberation!", "Reverberation!"]
+  detonation:
+    default:    ["Closing — Detonation!", "Detonation!"]
+  scission:
+    default:    ["Closing — Scission!", "Scission!"]
+  compression:
+    default:    ["Closing — Compression!", "Compression!"]
+  transfixion:
+    default:    ["Closing — Transfixion!", "Transfixion!"]
+  impaction:
+    default:    ["Closing — Impaction!", "Impaction!"]
+
+# ---------------------------------------------------------------------------
+# LEVEL-2 CLOSERS — extended chain, named energies
+# ---------------------------------------------------------------------------
+level_2_close:
+  fusion:
+    default:    ["Fusion!"]
+    mood_alert: ["Fusion — burst now!"]
+    mood_furious: ["FUSION!"]
+  fragmentation:
+    default:    ["Fragmentation!"]
+    mood_alert: ["Fragmentation — burst NOW!"]
+  distortion:
+    default:    ["Distortion!"]
+  gravitation:
+    default:    ["Gravitation!"]
+
+# ---------------------------------------------------------------------------
+# LEVEL-3 CLOSERS — apex; party-wide audible
+# ---------------------------------------------------------------------------
+level_3_close:
+  light:
+    default:    ["LIGHT!"]
+    mood_content: ["Light! Burn it!"]
+    mood_alert:   ["LIGHT! BURST!"]
+    mood_furious: ["LIGHT!"]
+  darkness:
+    default:    ["DARKNESS!"]
+    mood_alert: ["DARKNESS — bind it!"]
+    mood_mischievous: ["Hah — Darkness, beautiful!"]
+
+# ---------------------------------------------------------------------------
+# MAGIC BURST CALLOUTS — element name shouted on landed MB
+# ---------------------------------------------------------------------------
+magic_burst:
+  fire:        ["Magic Burst — Fire!", "Burst — Fire!"]
+  blizzard:    ["Magic Burst — Blizzard!", "Burst — Ice!"]
+  thunder:     ["Magic Burst — Thunder!"]
+  aero:        ["Magic Burst — Aero!"]
+  stone:       ["Magic Burst — Stone!"]
+  water:       ["Magic Burst — Water!"]
+  cure:        ["Magic Burst — Cure!", "Cure burst!"]
+  banish:      ["Magic Burst — Banish!"]
+  drain:       ["Magic Burst — Drain!"]
+
+# ---------------------------------------------------------------------------
+# AILMENT MAGIC BURST CALLOUTS — these trigger the 3x amplification.
+# The audible callout is the ONLY indicator the party's CC just got
+# super-charged for 30 seconds. Critical that the call is loud and clear.
+# ---------------------------------------------------------------------------
+magic_burst_ailment:
+  slow:
+    default:    ["Magic Burst — Slow!", "SLOW BURST! Locked!"]
+    mood_content: ["Magic Burst — Slow! 3x for 30!"]
+  paralyze:    ["Magic Burst — Paralyze! 3x!"]
+  bind:        ["Magic Burst — Bind! Held!"]
+  sleep:       ["Magic Burst — Sleep!"]
+  silence:     ["Magic Burst — Silence! Mute him!"]
+  bio:         ["Magic Burst — Bio! Bleeding!"]
+  dia:         ["Magic Burst — Dia! Defense down!"]
+  distract:    ["Magic Burst — Distract!"]
+  addle:       ["Magic Burst — Addle!"]
+  blind:       ["Magic Burst — Blind!"]
+  poison:      ["Magic Burst — Poison! Triple bleed!"]
+  frazzle:     ["Magic Burst — Frazzle!"]
+
+# ---------------------------------------------------------------------------
+# CHAIN-FAIL VOCALIZATIONS — non-verbal, per-character
+# ---------------------------------------------------------------------------
+chain_fail:
+  default:    ["[grunt of frustration]", "Damn it.", "Missed it!"]
+  mood_furious: ["[snarl]", "FUCK!"]    # localized; profanity gated by user setting
+  mood_content: ["[soft sigh]", "Eh, next time."]
+  mood_gruff:   ["Hmph."]
+
+# ---------------------------------------------------------------------------
+# BOSS RESPONSES — bosses vocalize when chained or burst
+# ---------------------------------------------------------------------------
+boss_chained_l1:
+  default:    ["[grunt]", "Heh."]
+  mood_mischievous: ["Now we're talking!"]
+  mood_furious: ["[snarl]"]
+
+boss_chained_l2:
+  default:    ["[hard exhale]", "Skilled."]
+  mood_mischievous: ["Excellent! Show me more!"]
+  mood_contemplative: ["...interesting."]
+  mood_furious: ["ENOUGH!"]
+
+boss_chained_l3:
+  default:    ["[grunt of impact]"]
+  mood_contemplative: ["...I haven't seen Light in years."]
+  mood_furious: ["YOU DARE!"]
+
+boss_burst_ailment_amplified:
+  default:    ["[shudder]", "[grunt]"]
+  mood_furious: ["GET — IT — OFF!"]
+  mood_contemplative: ["...skilled. Truly."]
+
+# ---------------------------------------------------------------------------
+# CIVILIAN PANIC RESPONSES — bystander NPCs hearing combat
+# ---------------------------------------------------------------------------
+civilian_heard_skillchain:
+  fearful:    ["What was that?!", "Adventurer — I think someone's fighting!"]
+  alert:      ["Skillchain — listen!"]
+
+civilian_heard_boss_ultimate:
+  fearful:    ["Get down!", "Goddess protect us!", "[whimper]"]
+
+# ---------------------------------------------------------------------------
+# INTERVENTION MAGIC BURST CALLOUTS
+# Per INTERVENTION_MB.md. The save-the-wipe heroic moments. Same audible-
+# only philosophy: no chatbox; the party/world hears the save happen.
+# ---------------------------------------------------------------------------
+
+# WHM cure intervention
+intervention_cure:
+  default:    ["Magic Burst — Cure!", "Cure burst — saved!"]
+  mood_alert: ["Cure burst! Hold!", "Magic Burst — Cure! Regen up!"]
+  mood_content: ["Magic Burst — Cure! 3x for 30!"]
+intervention_curaga:
+  default:    ["Magic Burst — Curaga!", "Curaga burst — party safe!"]
+intervention_cure_v_light:
+  default:    ["**MAGIC BURST — CURE V!**", "**LIGHT-CURE BURST!**"]
+  mood_content: ["Cure V on Light — full party shield!"]
+
+# Na' / status-cleanse intervention
+intervention_na_spell:
+  default:    ["Magic Burst — Paralyna!", "Magic Burst — Poisona!", "Magic Burst — Silena!"]
+intervention_erase:
+  default:    ["Magic Burst — Erase!", "Erase burst — clean!"]
+
+# RDM enhancing intervention
+intervention_enhance:
+  default:    ["Magic Burst — Haste!", "Magic Burst — Refresh!", "Magic Burst — Phalanx!"]
+  mood_content: ["Refresh burst — dual-cast on!"]
+
+# BLM debuff intervention
+intervention_debuff:
+  default:    ["Magic Burst — Bio!", "Magic Burst — Slow!", "Magic Burst — Distract!"]
+  mood_content: ["Debuff burst — dual-cast unlocked!"]
+
+# BRD song intervention (single-target songs only)
+intervention_song:
+  default:    ["Magic Burst — Mage's Ballad!", "Magic Burst — Minuet!"]
+  mood_mischievous: ["Song burst — dual conducting!"]
+
+# SCH helix intervention
+intervention_helix:
+  default:    ["Magic Burst — Firestorm Helix!", "Magic Burst — Hailstorm Helix!"]
+  mood_content: ["Helix burst — DoT doubled!"]
+
+# GEO luopan / Indi intervention
+intervention_geo:
+  default:    ["Magic Burst — Indi-Refresh!", "LUOPAN BURST!"]
+  mood_content: ["Luopan burst — radius doubled!"]
+intervention_geo_light:
+  default:    ["**LUOPAN BURST — LIGHT VORTEX!**"]
+
+# Tank enmity spike interventions
+intervention_flash:
+  default:    ["FLASH BURST!", "Flash burst — eyes on me!"]
+  mood_alert: ["FLASH BURST! Hold the line!"]
+intervention_provoke:
+  default:    ["PROVOKE BURST!", "Provoke burst — aggro held!"]
+  mood_furious: ["PROVOKE BURST!"]
+
+# Failed intervention (cast started, didn't land in window)
+intervention_failed:
+  default:    ["[grunt of frustration]", "Missed it!", "Damn — didn't land!"]
+  mood_furious: ["[snarl]", "FUCK — too slow!"]
+
+# Mob-side intervention (mob healer cancels player chain)
+mob_intervention_succeeded:
+  default:    ["[mob voice] Cure burst!", "[mob healer triumph cry]"]
+  notes:      "Per-mob-class voice; Quadav Healer / Yagudo Cleric / etc each have their own"
+
+# Party reactions to a save
+party_saved_by_intervention:
+  default:    ["Nice save!", "Healer pulled it!", "Saved us!"]
+  mood_content: ["You absolute legend!"]
+
+# Reaction to enemy intervention blocking the party's chain
+chain_blocked_by_enemy_intervention:
+  default:    ["[grunt]", "They healed it!", "Intervention block — kill the healer!"]
+  mood_furious: ["GET THAT HEALER!"]
+  mood_alert:   ["Healer first! Silence them!"]

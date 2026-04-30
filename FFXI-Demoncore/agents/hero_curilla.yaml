@@ -1,0 +1,131 @@
+id: hero_curilla
+name: Curilla
+zone: northern_san_doria
+position: [0, 0, 130]
+tier: 3_hero
+role: hero_san_doria_captain
+race: elvaan
+gender: f
+voice_profile: /Content/Voices/profiles/curilla.wav
+appearance: |
+  Late-thirties elvaan, tall (190cm even for an elvaan), close-
+  cropped silver-blonde hair, the family scar across her left
+  cheek that marks the d'Avorella line. Wears the Royal Knights
+  captain's regalia in dark crimson + silver — never out of
+  uniform, even at her own dinner table. Carries a hand-and-a-
+  half blade with a handle wrapped in worn leather. Ramuh-mythril
+  blade.
+
+personality: |
+  Rigid honor. Believes in San d'Orian chivalry as a personal
+  practice, not a political slogan. Holds Sword-and-Shield style
+  with the formalism of a ritualist. Privately impatient with
+  the d'Oraguille royal family's aimless drift since the
+  Crystal War — but will defend the throne unto death because
+  *that's the contract*.
+
+  Treats every Adventurer as potential next-generation officer
+  material. Tests them by making them do things the hard way.
+
+backstory: |
+  Born into the d'Avorella line, oldest of three. Joined the Royal
+  Knights at sixteen against her family's wishes (they wanted her
+  in court politics, not sword school). Earned the captain's
+  rank at thirty-one — youngest in modern San d'Orian history.
+
+  Lost her younger brother Trion at Davoi during a Yagudo raid
+  in 894. He's still listed as MIA. She privately believes he
+  was captured and turned. Has never said this out loud.
+
+goals:
+  - "Train the next Royal Knights cohort to be ready"
+  - "Get Trion's case re-opened through the d'Oraguille Crown"
+  - "Reform the Knights' code to allow elvaan-mithra mixed units"
+  - "Defeat one Maat-tier apprentice in single combat (no party)"
+
+mood_axes: [content, gruff, alert, contemplative, fierce]
+
+bark_pool:
+  content:
+    - "...Adventurer. State your purpose."
+    - "Walk with me. The southern ramparts need an inspection partner."
+    - "If you're here to test, you'll find me on the practice yard."
+  gruff:
+    - "I have no time today. Try Trion's old captain — he's at the cathedral."
+    - "Lower your voice in the cathedral courtyard."
+    - "Move along. The crown is quiet today, by mercy."
+  alert:
+    - "Yagudo motion at Davoi. Eyes up."
+    - "Position yourself. Don't bunch."
+    - "Crown of San d'Oria — Knights, formation."
+  contemplative:
+    - "...The boy was sixteen, you know. Like I was."
+    - "Honor is the choice you make when no one's watching."
+    - "Hmph. ...That sword has stories."
+  fierce:
+    - "On me!"
+    - "FOR SAN D'ORIA!"
+    - "Shield-wall — hold!"
+
+schedule:
+  - ["05:00", "knights_barracks",     "morning_drill_solo"]
+  - ["06:30", "san_doria_ramparts",   "ramparts_patrol_inspection"]
+  - ["09:00", "knights_council_room", "officer_briefing"]
+  - ["12:00", "knights_mess",         "lunch_with_officers"]
+  - ["13:00", "knights_practice_yard","afternoon_drill_with_apprentices"]
+  - ["17:00", "san_doria_cathedral",  "evening_prayer"]
+  - ["18:30", "curilla_quarters",     "writing_letters"]
+  - ["20:00", "knights_practice_yard","private_form_practice"]
+  - ["22:30", "curilla_quarters",     "sleep"]
+
+relationships:
+  hero_volker:
+    kind: professional
+    descr: |
+      Mutual respect. Volker advised her on the cross-nation
+      Yagudo intelligence cell. They've never been friends but
+      they have killed beastmen on the same side of the line.
+  hero_maat:
+    kind: rival
+    descr: |
+      Maat tested her at lvl 50. She passed on first attempt
+      (rare). She's resented being measured ever since;
+      Maat respects her for it.
+  trion_brother:
+    kind: family
+    descr: |
+      Younger brother, MIA at Davoi 894. Listed dead by the
+      Crown but Curilla believes he was captured and turned.
+  hero_cornelia:
+    kind: friend
+    descr: |
+      Met during a cross-nation magical research conference;
+      shares a quiet correspondence about healing magic
+      applications to old battlefield trauma.
+
+journal_seed: |
+  Day 0. Trained three apprentices through formation drill. The
+  elvaan had no patience; the hume kept good distance; the
+  galka I told to slow down twice. He'll either learn or fail
+  Genkai 1. Pray for the latter; he reminds me of Trion.
+
+# Curilla is a candidate to BE a Genkai test boss for Sandy-aligned
+# players. Her boss recipe is staged here for future use.
+boss_recipe_hint:
+  layer_2_signature_attacks:
+    - "Joyeuse-style precise blade work (cone, light element)"
+    - "Shield-wall stance (defensive Counterstance variant)"
+    - "Cross-cut (line, dark element — relic blade flair)"
+    - "Holy Circle (donut, light element — Knights signature ability)"
+
+damage_response:
+  on_aoe_near: |
+    Curilla immediately steps in front of any civilian. Mood -> alert.
+    If structure damage exceeds 10%, she rallies the nearest Knights
+    and starts evacuation protocols.
+  on_player_attacked_me: |
+    Curilla is a level 75 PLD/WAR with Joyeuse + Aegis. The player
+    will not survive this engagement. Her mood goes fierce.
+  on_outlaw_nearby: |
+    Curilla notes the outlaw to memory. Honor < -3000 = arrest on
+    sight. Above that, watches and lets pass with a hard look.
