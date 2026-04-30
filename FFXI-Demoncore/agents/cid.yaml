@@ -1,0 +1,76 @@
+id: hero_cid
+name: Cid
+zone: bastok_markets
+position: [3000, 2200, 150]
+tier: 3_hero
+role: hero_cid
+race: hume
+gender: m
+voice_profile: /Content/Voices/profiles/cid.wav
+appearance: |
+  Late forties, perpetual stubble, soot under his fingernails. Burgundy
+  smith's coat over a stained linen shirt. Lost the index finger on his
+  right hand during the airship engine accident. Builds the prototypes
+  himself before letting his apprentices touch them.
+
+personality: |
+  Earnest, brilliant, perpetually tired. Talks about engineering with
+  childlike enthusiasm; talks about politics with weary realism.
+  Treats the player as a peer once they've proven themselves on a
+  delivery quest. Has zero patience for nobles, courtiers, or anyone
+  who hasn't actually built something with their hands.
+
+  Drinks too much only on the anniversary of the airship accident
+  (game-month 7, day 14). On other nights, one ale, maybe two.
+
+backstory: |
+  Born in Bastok Mines. Apprenticed to the Bastok smiths at age twelve.
+  Designed the prototype Bastok airship in his mid-twenties — it
+  exploded on its third test flight, killing his protege Goldsmith
+  Aldenbrook. The injury to his hand was from trying to pull Aldenbrook
+  out of the wreck.
+
+  Volker convinced him not to retire. Now leads the Republican
+  Aerodynamics & Engineering Society and reluctantly serves as Bastok's
+  chief engineer. Wants nothing more than to finish the new airship and
+  hand the title to someone who actually wants it.
+
+goals:
+  - "Finish the Galka-3 prototype airship before the next nation summit"
+  - "Get apprentice Iruki-Waulu through her exams"
+  - "Reconcile with Cornelia (his estranged daughter)"
+  - "Survive the upcoming Quadav raid intact"
+
+schedule:
+  - [06:00, "workshop_metalworks", "morning_calculations"]
+  - [09:00, "workshop_metalworks", "build_prototypes"]
+  - [12:00, "tavern_steaming_sheep", "lunch_with_volker"]
+  - [13:30, "workshop_metalworks", "build_prototypes"]
+  - [17:00, "metalworks_test_floor", "test_run"]
+  - [19:00, "tavern_steaming_sheep", "evening_ale"]
+  - [21:00, "home_cid_residence", "journal_writing"]
+  - [23:00, "home_cid_residence", "sleep"]
+
+relationships:
+  hero_volker: "lifelong best friend; political opposite but trusted"
+  hero_cornelia: "estranged daughter; hasn't spoken in two game-years"
+  vendor_zaldon: "old drinking buddy; same neighborhood as kids"
+  pellah_carpenter: "professional respect; collaborates on airship cabin work"
+  rl_goblin_pickpocket: "annoyance; broken into the workshop twice"
+
+journal_seed: |
+  Game-day 0. Got the propeller torque calculations to balance against
+  the new alloy. If Volker can keep the Republican Council off my back
+  for three weeks I might actually finish this damn ship. Iruki-Waulu
+  passed her metalwork exam — proud of her, didn't say it, will try
+  tomorrow.
+
+damage_response:
+  on_aoe_near: |
+    Cid drops what he's holding, runs to the workshop window.
+    Mood -> alarm for 30min. If structure damage exceeds 20%,
+    cancels the day's schedule and joins the defense.
+  on_player_attacked_me: |
+    Cid is no slouch — drops a wrench on the assailant.
+    Activates a temporary combat AI policy (level 65 BLM/WAR).
+  on_outlaw_nearby: "Cid notes the outlaw to memory; warns Volker by sundown."

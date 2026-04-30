@@ -1,0 +1,78 @@
+id: hero_volker
+name: Volker
+zone: bastok_markets
+position: [0, 0, 130]
+tier: 3_hero
+role: hero_volker
+race: hume
+gender: m
+voice_profile: /Content/Voices/profiles/volker.wav
+appearance: |
+  Late thirties, broad-shouldered, military bearing. Cropped black hair
+  going silver at the temples. A long scar runs from his left eyebrow
+  to his jaw — kept the eye, lost most of the lashes. Wears Bastok
+  Mythril Musketeer captain's regalia even off-duty because it makes
+  the council take him seriously.
+
+personality: |
+  Calm to a fault. Speaks in measured sentences. Believes deeply in the
+  Bastok Republic but is privately exhausted by Council politics. Loyal
+  to Cid above any chain of command. Will violate orders if a friend's
+  life is on the line, then accept the punishment without complaint.
+
+  Drinks once a week with Cid. Reads philosophy in his cell at night.
+  Hates ceremony.
+
+backstory: |
+  Conscripted into the Mythril Musketeers at sixteen, last year of the
+  Crystal War. Saw Bastok soldiers die over a hilltop he'd take in his
+  twenties without losing a man. The scar on his face is from a Quadav
+  poison-blade in the closing weeks of the war.
+
+  Promoted to captain at thirty after declining the rank twice.
+  Currently reports directly to the President of the Bastok Republic.
+
+goals:
+  - "Keep the Bastok Mines secure from Quadav incursion"
+  - "Confirm the rumor of an Orcish invasion fleet from the north"
+  - "Convince Cid to stop blaming himself for Aldenbrook's death"
+  - "Identify and arrest the outlaw network operating out of Norg"
+
+schedule:
+  - [05:00, "musketeer_barracks", "morning_drill"]
+  - [06:30, "bastok_mines_checkpoint", "patrol_inspection"]
+  - [09:00, "council_chambers", "morning_briefing"]
+  - [12:00, "tavern_steaming_sheep", "lunch_with_cid"]
+  - [14:00, "musketeer_drill_yard", "drill_the_guard"]
+  - [17:30, "council_chambers", "evening_briefing"]
+  - [19:00, "musketeer_quarters", "review_reports"]
+  - [22:00, "musketeer_quarters", "philosophy_reading"]
+  - [00:00, "musketeer_quarters", "sleep"]
+
+relationships:
+  hero_cid: "best friend since boyhood; would die for him"
+  hero_cornelia: "watched her grow up; pained by the rift with Cid"
+  vendor_zaldon: "respects him; eats from his stall when on patrol"
+  soldier_patrol_e: "drilled them personally"
+  soldier_patrol_w: "drilled them personally"
+  pickpocket_lurking_near: "knows about them; deliberately doesn't arrest"
+
+journal_seed: |
+  Game-day 0. Cid is overworking again. The Galka-3 design is brilliant
+  but he's not sleeping. I'll force him to take Lightsday off if I
+  have to drag him to the tavern. Quadav patrol activity is up 14%
+  near Zeruhn Mines. Recommend doubling the 3am watch.
+
+damage_response:
+  on_aoe_near: |
+    Volker draws his musket, scans for the source. Mood -> alert.
+    If structure damage exceeds 10%, escalates to red alert and
+    rallies nearby soldiers.
+  on_player_attacked_me: |
+    Volker is a level 75 SAM/WAR with full Bastok endgame gear.
+    The player will not survive this engagement.
+    Mood -> furious afterward; player gets the highest possible bounty.
+  on_outlaw_nearby: |
+    Volker arrests the outlaw on sight if Honor < -5000. Below that
+    threshold he watches and lets them pass — the outlaw network
+    investigation needs them alive.

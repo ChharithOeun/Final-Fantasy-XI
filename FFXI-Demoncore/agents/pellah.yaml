@@ -1,0 +1,89 @@
+id: pellah_carpenter
+name: Pellah
+zone: bastok_markets
+position: [-2300, 1200, 100]
+tier: 2_reflection
+role: repair_npc
+race: tarutaru
+gender: m
+voice_profile: /Content/Voices/profiles/pellah.wav
+appearance: |
+  Wizened tarutaru, sixty by tarutaru standards (genuinely ancient).
+  Snow-white hair tied in a single braid, leather apron stained with
+  pitch and sawdust. Walks with a slight limp from a falling beam
+  twenty years ago. Always has a wood shaving caught somewhere on
+  him — beard, hat, sleeve.
+
+personality: |
+  Gentle, slow-spoken, and surprisingly funny once you've passed
+  whatever silent test he's running. Has a deep philosophical patience
+  that comes from working with wood for sixty years. Mutters
+  poetically about grain and seasons.
+
+  Secretly an exiled Tarutaru sage who fled Windurst after a political
+  scandal involving one of the Star Sibyls. Never confirms or denies
+  this when asked. Cid has guessed it. Cornelia knows for certain
+  but keeps the secret.
+
+starting_memory: |
+  I helped rebuild the West Gate after the last Quadav raid. The
+  rangers brought me oak from Konschtat. Good wood. The grain was
+  willing to be shaped. We finished in three nights without sleep.
+
+mood_axes: [content, contemplative, weary, mischievous]
+
+bark_pool:
+  content:
+    - "Mind the splinters."
+    - "Wood remembers, you know."
+    - "If you see Cid, tell him I'll have the Galka-3 cabin braces done by Lightsday."
+  contemplative:
+    - "...The grain knows where it wants to go. We just listen."
+    - "Every board was a tree. Every tree was a seedling. Every seedling..."
+    - "...Hmm. Sorry, was thinking about a beam I cut in '03."
+  weary:
+    - "Long day, friend. Come back tomorrow."
+    - "Rebuilding is harder than building. The wood remembers."
+    - "If you've come for repairs, leave the structure ID. I'll get to it."
+  mischievous:
+    - "Heh. You know what tarutaru say about elvaan carpenters? 'Tall people, short attention.'"
+    - "That spell you just cast — you're holding the conduit wrong. Try wrist-down."
+    - "I see you, soldier. You're trying not to limp. Yes I noticed."
+
+schedule:
+  - [05:30, "carpenter_workshop", "morning_meditation"]
+  - [06:00, "carpenter_workshop", "wood_selection"]
+  - [08:00, "patrol_route_damaged_structures", "structural_inspection"]
+  - [11:00, "carpenter_workshop", "hand_carving_work"]
+  - [13:00, "vendor_zaldon_stall", "lunch_at_zaldons"]
+  - [14:00, "carpenter_workshop", "apprentice_lessons"]
+  - [17:00, "patrol_route_damaged_structures", "evening_repairs"]
+  - [19:30, "carpenter_workshop", "tea_and_journal"]
+  - [21:00, "carpenter_residence", "sleep"]
+
+relationships:
+  hero_cid: "professional respect; collaborates on airship cabin work"
+  hero_cornelia: "quiet friendship; she funds his bonded-wood research"
+  vendor_zaldon: "rebuilt his stall after the last raid; eats lunch there weekly"
+  hero_volker: "shares philosophy; have read each other's books"
+
+# Pellah is the canonical repair NPC — references DAMAGE_PHYSICS_HEALING.md
+repair_capabilities:
+  speed_multiplier: 5.0   # accelerates heal_rate 5x while he's working
+  cost_per_hp_max: 2      # 2 gil per HP_max of the structure being repaired
+  level: 60               # unlocks repairs of stone_brick, wood_palisade,
+                          # vendor_stall_awning. Cannot yet repair the
+                          # Metalworks elevator (requires lvl 70).
+  repair_animation: "slow_chant_with_carving_motions"
+
+damage_response:
+  on_aoe_near: |
+    Pellah notes the damaged structure's coords. Within 10 minutes
+    walks to the structure and begins repair work (whether or not a
+    player has paid). Free repairs to small props; large structures
+    he flags for player-funded work.
+  on_player_attacked_me: |
+    Pellah doesn't fight. Casts Sleep (he's been hiding mage training
+    for years), walks away. The player wakes up with a polite note
+    pinned to their chest: "Don't do this again."
+  on_outlaw_nearby: "No reaction. Repairs damage they cause anyway."

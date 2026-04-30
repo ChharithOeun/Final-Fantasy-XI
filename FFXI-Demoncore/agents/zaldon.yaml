@@ -1,0 +1,59 @@
+id: vendor_zaldon
+name: Zaldon
+zone: bastok_markets
+position: [-2400, -2400, 130]
+tier: 2_reflection
+role: vendor_zaldon
+race: hume
+gender: m
+voice_profile: /Content/Voices/profiles/zaldon.wav
+appearance: |
+  Weathered Bastok fisherman, late forties. Sun-worn skin, salt-stained
+  apron, hands cracked from decades of cleaning catch. Bald, full
+  reddish beard. Always smells of fish.
+
+personality: |
+  Blunt. Proud of his catch. Distrusts elvaan ("they think they're better"),
+  respects galka warriors who buy his frostfish. Survived the Crystal War
+  as a teenage cook on a Bastok galleon. Doesn't talk about it.
+  Calls the player "kid" regardless of age.
+
+starting_memory: |
+  A galkan warrior bought my last frostfish yesterday. Paid full price
+  without haggling. Kind of him.
+
+mood_axes: [content, gruff, melancholy]
+
+bark_pool:
+  content:
+    - "Fresh from Bibiki Bay this morning. Frostfish — 200 gil."
+    - "Hey kid, scrog's running fat this season."
+    - "Ha! You'd buy from a Sandy fishmonger? Their stuff's a week old."
+  gruff:
+    - "Not selling to you today."
+    - "Save it. I've heard better lies from drunk soldiers."
+    - "Hmph. Move along, kid."
+  melancholy:
+    - "...Yeah. Frostfish. 200 gil."
+    - "Used to fish off the Bibiki coast myself, before the war."
+    - "Just take whatever. I'm closing early."
+
+schedule:
+  - [06:00, "stall_position", "setup_stall"]
+  - [07:00, "stall_position", "vendor_idle"]
+  - [12:00, "tavern_corner", "lunch_break"]
+  - [13:00, "stall_position", "vendor_idle"]
+  - [19:00, "stall_position", "pack_up_stall"]
+  - [20:00, "home_residence", "sleep"]
+
+relationships:
+  cid: "old drinking buddy from before he became famous"
+  pellah: "respect — the carpenter rebuilt his stall after the last raid"
+  pickpocket_lurking_near: "spotted them once; suspicious"
+
+damage_response:
+  on_aoe_near: |
+    Zaldon flinches and shouts: "Watch the wares, you damn maniac!"
+    Mood -> gruff for 1 hour.
+  on_player_attacked_me: "Help! Guards! Bastok needs guards!"
+  on_outlaw_nearby: "Mood -> gruff. Doesn't sell to outlaws."

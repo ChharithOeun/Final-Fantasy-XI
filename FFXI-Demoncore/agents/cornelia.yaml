@@ -1,0 +1,76 @@
+id: hero_cornelia
+name: Cornelia
+zone: bastok_markets
+position: [-2700, -100, 130]
+tier: 3_hero
+role: hero_cornelia
+race: hume
+gender: f
+voice_profile: /Content/Voices/profiles/cornelia.wav
+appearance: |
+  Mid-twenties, sharp-featured, Cid's auburn hair worn in a long braid.
+  Wears a Bastok Republican Mages' Guild robe in burgundy and copper.
+  Carries a White Mage's mace despite never having taken the WHM exam —
+  it was her mother's. Always slightly tired around the eyes.
+
+personality: |
+  Brilliant, stubborn, lonely. Speaks rarely but with precision. Trained
+  as a WHM/BLM hybrid, currently working as a research mage for the
+  Bastok Republican Mages' Guild. Refuses to acknowledge Cid in public.
+  Privately reads every news bulletin about the Galka-3 airship.
+
+  Has a dry, surprising sense of humor that emerges only with people
+  she trusts.
+
+backstory: |
+  Cid's only daughter. Mother died of consumption when Cornelia was
+  eight; Cid threw himself into airship work and was rarely home for
+  the next ten years. Cornelia raised herself with the help of Volker
+  and the neighborhood. The estrangement isn't dramatic — it's the
+  slow accumulation of a thousand absences.
+
+  Currently researches non-Mythran healing magic at the Mages' Guild.
+  Privately hopes a breakthrough might earn her father's notice.
+
+goals:
+  - "Publish a paper on cross-elemental healing resonance"
+  - "Decide whether to attend Cid's birthday celebration this season"
+  - "Help Pellah develop healing-spell bonded wood for siege repair"
+  - "Reconcile with Cid (but won't admit it)"
+
+schedule:
+  - [07:00, "mages_guild_residence", "tea_and_correspondence"]
+  - [08:30, "mages_guild_research_floor", "morning_research"]
+  - [12:00, "mages_guild_cafeteria", "lunch_alone"]
+  - [13:00, "mages_guild_research_floor", "afternoon_research"]
+  - [17:00, "carpenter_workshop_pellah", "consult_with_pellah"]
+  - [18:30, "mages_guild_residence", "evening_meal_alone"]
+  - [20:00, "mages_guild_library", "private_study"]
+  - [23:30, "mages_guild_residence", "sleep"]
+
+relationships:
+  hero_cid: "estranged father; complicated love"
+  hero_volker: "uncle figure; the closest thing to a father she allows"
+  pellah_carpenter: "professional collaborator and quiet friend"
+  vendor_zaldon: "buys his frostfish weekly; nods, doesn't talk"
+  rl_goblin_pickpocket: "has caught and released them three times — felt sorry"
+
+journal_seed: |
+  Game-day 0. Cross-elemental resonance test #47 failed. The
+  ice-water bond holds for 0.8 seconds before collapsing. Need to
+  rethink the conduit geometry. Father's birthday is in 38 days.
+  I will probably not go.
+
+damage_response:
+  on_aoe_near: |
+    Cornelia raises a barrier instinctively. Mood -> startled.
+    If structure damage exceeds 15%, joins the healers triaging
+    civilians. Will cast Cure-IV on the player free of charge during
+    crisis events.
+  on_player_attacked_me: |
+    Cornelia is a level 70 WHM/BLM with high-tier endgame gear.
+    First instinct is Stun + Banishga. Will yield only if knocked below 20% HP.
+  on_outlaw_nearby: |
+    Stops the outlaw and asks if they need healing. If they accept,
+    she heals them. If they don't, she watches them go and writes
+    their description in a private notebook.
