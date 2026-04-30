@@ -201,6 +201,25 @@ EVENT_DELTAS: list[tuple[tuple[str, str], tuple[str, float]]] = [
     (("crafted_for_player",         "*"),            ("content",  +0.15)),
     (("became_grandmaster",         "*hero*"),       ("content",  +0.50)),
     (("became_grandmaster",         "*"),            ("content",  +0.40)),
+
+    # Aggro + cross-zone pursuit events (per SEAMLESS_WORLD.md). The
+    # world reacts when a player runs through it being chased — civilians
+    # visibly panic, soldiers go alert, the chase is part of the city's
+    # living narrative.
+    (("became_enraged",              "*"),           ("furious",  +0.50)),
+    (("became_boss_enraged",         "*"),           ("furious",  +0.70)),
+    (("escaped_pursuing_mob",        "*hero*"),      ("content",  +0.40)),
+    (("escaped_pursuing_mob",        "*civilian*"),  ("content",  +0.30)),
+    (("escaped_pursuing_mob",        "*"),           ("content",  +0.30)),
+    (("crossed_zone_while_chased",   "*hero*"),      ("alert",    +0.20)),
+    (("crossed_zone_while_chased",   "*civilian*"),  ("fearful",  +0.30)),
+    (("entered_sanctuary_safe",      "*hero*"),      ("content",  +0.30)),
+    (("entered_sanctuary_safe",      "*"),           ("content",  +0.20)),
+    (("mob_lost_my_trail",           "*"),           ("content",  +0.20)),
+    (("being_chased_by_mob",         "*civilian*"),  ("fearful",  +0.50)),
+    (("being_chased_by_boss",        "*"),           ("fearful",  +0.70)),
+    (("witnessed_chase_through_city","*civilian*"),  ("fearful",  +0.40)),
+    (("witnessed_chase_through_city","*soldier*"),   ("alert",    +0.50)),
 ]
 
 
