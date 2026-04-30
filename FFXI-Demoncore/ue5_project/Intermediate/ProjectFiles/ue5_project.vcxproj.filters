@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ue5_project.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\ue5_projectEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Source\ue5_project">
+      <UniqueIdentifier>{B16EE0D9-4EBA-3D77-8DE7-EF74C9C6AA30}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ue5_project\ue5_project.Build.cs">
+      <Filter>Source\ue5_project</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\ue5_project\ue5_project.cpp">
+      <Filter>Source\ue5_project</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\ue5_project.h">
+      <Filter>Source\ue5_project</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\ue5_projectCharacter.cpp">
+      <Filter>Source\ue5_project</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\ue5_projectCharacter.h">
+      <Filter>Source\ue5_project</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\ue5_projectGameMode.cpp">
+      <Filter>Source\ue5_project</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\ue5_projectGameMode.h">
+      <Filter>Source\ue5_project</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\ue5_projectPlayerController.cpp">
+      <Filter>Source\ue5_project</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\ue5_projectPlayerController.h">
+      <Filter>Source\ue5_project</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Combat">
+      <UniqueIdentifier>{54A6A30A-E817-3FB2-9F86-819DC5854333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ue5_project\Variant_Combat\AI">
+      <UniqueIdentifier>{1B353777-78F2-3D2C-B085-B042C1515BF3}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatAIController.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatAIController.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatEnemy.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatEnemy.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatEnemySpawner.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatEnemySpawner.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatStateTreeUtility.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\CombatStateTreeUtility.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\EnvQueryContext_Danger.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\EnvQueryContext_Danger.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\AI\EnvQueryContext_Player.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\AI\EnvQueryContext_Player.h">
+      <Filter>Source\ue5_project\Variant_Combat\AI</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Combat\Animation">
+      <UniqueIdentifier>{0F76EF80-58D6-3F3B-A948-04E93A5E0FAB}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_CheckChargedAttack.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_CheckChargedAttack.h">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_CheckCombo.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_CheckCombo.h">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_DoAttackTrace.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Animation\AnimNotify_DoAttackTrace.h">
+      <Filter>Source\ue5_project\Variant_Combat\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\CombatCharacter.cpp">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\CombatCharacter.h">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\CombatGameMode.cpp">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\CombatGameMode.h">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\CombatPlayerController.cpp">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\CombatPlayerController.h">
+      <Filter>Source\ue5_project\Variant_Combat</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Combat\Gameplay">
+      <UniqueIdentifier>{53EB9CAA-4E74-309A-9BC3-D71EACC6DD13}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatActivationVolume.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatActivationVolume.h">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatCheckpointVolume.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatCheckpointVolume.h">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatDamageableBox.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatDamageableBox.h">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatDummy.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatDummy.h">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatLavaFloor.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Gameplay\CombatLavaFloor.h">
+      <Filter>Source\ue5_project\Variant_Combat\Gameplay</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Combat\Interfaces">
+      <UniqueIdentifier>{137F7239-3221-3963-B461-4502260A616E}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatActivatable.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatActivatable.h">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatAttacker.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatAttacker.h">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatDamageable.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\Interfaces\CombatDamageable.h">
+      <Filter>Source\ue5_project\Variant_Combat\Interfaces</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Combat\UI">
+      <UniqueIdentifier>{9CD8170C-9397-32E9-B0A4-D785CE312269}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Combat\UI\CombatLifeBar.cpp">
+      <Filter>Source\ue5_project\Variant_Combat\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Combat\UI\CombatLifeBar.h">
+      <Filter>Source\ue5_project\Variant_Combat\UI</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_Platforming">
+      <UniqueIdentifier>{E244F052-4457-3CCE-B4D5-4295391BF632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ue5_project\Variant_Platforming\Animation">
+      <UniqueIdentifier>{8EE5508B-2B64-3667-A69E-6B8E5E41D17E}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Platforming\Animation\AnimNotify_EndDash.cpp">
+      <Filter>Source\ue5_project\Variant_Platforming\Animation</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Platforming\Animation\AnimNotify_EndDash.h">
+      <Filter>Source\ue5_project\Variant_Platforming\Animation</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingCharacter.cpp">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingCharacter.h">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingGameMode.cpp">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingGameMode.h">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingPlayerController.cpp">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_Platforming\PlatformingPlayerController.h">
+      <Filter>Source\ue5_project\Variant_Platforming</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_SideScrolling">
+      <UniqueIdentifier>{8726C077-3191-3F06-A8F3-A8EAAC768008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ue5_project\Variant_SideScrolling\AI">
+      <UniqueIdentifier>{91741C71-0ED6-3E0C-81D6-A6B8D91FB858}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingAIController.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingAIController.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingNPC.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingNPC.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingStateTreeUtility.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\AI\SideScrollingStateTreeUtility.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\AI</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_SideScrolling\Gameplay">
+      <UniqueIdentifier>{4B543CD4-B4C0-316A-BA33-29B2EC54F5EA}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingJumpPad.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingJumpPad.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingMovingPlatform.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingMovingPlatform.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingPickup.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingPickup.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingSoftPlatform.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\Gameplay\SideScrollingSoftPlatform.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Gameplay</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_SideScrolling\Interfaces">
+      <UniqueIdentifier>{766789C4-3CD9-3614-87C1-449480C9D2D7}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\Interfaces\SideScrollingInteractable.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Interfaces</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\Interfaces\SideScrollingInteractable.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\Interfaces</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingCameraManager.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingCameraManager.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingCharacter.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingCharacter.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingGameMode.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingGameMode.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingPlayerController.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\SideScrollingPlayerController.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling</Filter>
+    </ClInclude>
+    <Filter Include="Source\ue5_project\Variant_SideScrolling\UI">
+      <UniqueIdentifier>{DA71E5BF-D99A-3F25-BBB7-24ED32406A6D}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ue5_project\Variant_SideScrolling\UI\SideScrollingUI.cpp">
+      <Filter>Source\ue5_project\Variant_SideScrolling\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ue5_project\Variant_SideScrolling\UI\SideScrollingUI.h">
+      <Filter>Source\ue5_project\Variant_SideScrolling\UI</Filter>
+    </ClInclude>
+    <None Include="..\..\ue5_project.uproject" />
+  </ItemGroup>
+</Project>
