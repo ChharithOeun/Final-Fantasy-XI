@@ -67,14 +67,26 @@ relationships:
   vendor_zaldon: "rebuilt his stall after the last raid; eats lunch there weekly"
   hero_volker: "shares philosophy; have read each other's books"
 
-# Pellah is the canonical repair NPC — references DAMAGE_PHYSICS_HEALING.md
+# Pellah is the canonical repair NPC — references both
+# DAMAGE_PHYSICS_HEALING.md (structures) AND EQUIPMENT_WEAR.md (gear)
 repair_capabilities:
+  # --- structure repair (DAMAGE_PHYSICS_HEALING.md) ---
   speed_multiplier: 5.0   # accelerates heal_rate 5x while he's working
   cost_per_hp_max: 2      # 2 gil per HP_max of the structure being repaired
   level: 60               # unlocks repairs of stone_brick, wood_palisade,
                           # vendor_stall_awning. Cannot yet repair the
                           # Metalworks elevator (requires lvl 70).
   repair_animation: "slow_chant_with_carving_motions"
+
+  # --- equipment repair (EQUIPMENT_WEAR.md) ---
+  repairs_equipment: true
+  equipment_specialty: carpentry
+  equipment_tier_unlocks:
+    60: [bronze, leather, cotton, wooden, cloth]
+    65: [mythril, banded_mail, scale_armor]
+    75: [one_master_recipe_per_story_unlock]    # gated behind story arc
+  current_master_recipe: null                    # designer flag; null = not unlocked
+  cannot_repair: [relic, mythic, empyrean]       # those need Cid / Volker / Maat
 
 damage_response:
   on_aoe_near: |

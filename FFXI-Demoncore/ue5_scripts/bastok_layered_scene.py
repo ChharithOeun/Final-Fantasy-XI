@@ -648,6 +648,127 @@ def build_system_b_ai_density():
 
 
 # -----------------------------------------------------------------------------
+# SYSTEM C — VISIBLE HEALTH (no HP/MP bars; physical damage + ailment cues)
+# -----------------------------------------------------------------------------
+# Per VISUAL_HEALTH_SYSTEM.md: every entity tagged with VH:<archetype>
+# gets a BPC_VisibleHealthState component attached by the downstream BP
+# setup pass. The component renders 7 damage stages via material decals
+# + idle anim blends + KawaiiPhysics damping, plus 16 status ailments
+# via particle systems and skin-tone shifts.
+#
+# Tag format: "VH:<archetype>"
+#   archetype is one of:
+#     hume_m, hume_f, elvaan_m, elvaan_f, tarutaru_m, tarutaru_f,
+#     mithra_f, galka_m, mob_quadav, mob_yagudo, mob_goblin, mob_orc,
+#     mob_dragon, mob_slime, mob_worm, wildlife_small, wildlife_bird
+# These map onto pre-authored decal sets and Niagara FX libraries.
+
+ARCHETYPE_BY_RACE_GENDER = {
+    ("hume", "m"):       "hume_m",
+    ("hume", "f"):       "hume_f",
+    ("elvaan", "m"):     "elvaan_m",
+    ("elvaan", "f"):     "elvaan_f",
+    ("tarutaru", "m"):   "tarutaru_m",
+    ("tarutaru", "f"):   "tarutaru_f",
+    ("mithra", "f"):     "mithra_f",
+    ("galka", "m"):      "galka_m",
+    ("galka", "f"):      "galka_m",  # rare — fallback
+}
+
+ROLE_TO_MOB_ARCHETYPE = {
+    "rl_mob":       "mob_goblin",  # default for our placed Tier-4 mob
+    "rat":          "wildlife_small",
+    "stray_cat":    "wildlife_small",
+    "pigeon":       "wildlife_bird",
+}
+
+
+def _archetype_for_npc(profile_tags: list[str]) -> str:
+    """Pick the visual-health archetype based on AIRole/AIColor tags."""
+    role = None
+    for t in profile_tags:
+        if t.startswith("AIRole:"):
+            role = t.split(":", 1)[1]
+            break
+    if role in ROLE_TO_MOB_ARCHETYPE:
+        return ROLE_TO_MOB_ARCHETYPE[role]
+    # We don't have race/gender on the level placeholders today (only
+    # in the agent YAMLs). Default to hume_m as a reasonable stand-in;
+    # the server will push the correct archetype on agent spawn.
+    return "hume_m"
+
+
+def build_system_c_visible_health():
+    print("[System C] Visible Health — physical damage + ailment cues")
+    folder = "Demoncore/System_C_VisibleHealth"
+    tag = "Demoncore_VisibleHealth"
+    wipe_by_tag(tag)
+
+    n = 0
+    # Walk every actor that's part of the AI density layer (System B)
+    # and tag with a VH archetype. The downstream BP setup pass will
+    # attach BPC_VisibleHealthState + BPC_VisibleAilmentState.
+    for actor in eas.get_all_level_actors():
+        actor_tags = [str(t) for t in actor.tags]
+        if "Demoncore_AI" not in actor_tags:
+            continue
+        if any(t.startswith("VH:") for t in actor_tags):
+            continue  # already tagged
+        archetype = _archetype_for_npc(actor_tags)
+        actor.tags = list(actor_tags) + [tag, f"VH:{archetype}"]
+        n += 1
+
+    # Drop a few demo actors near the player spawn at different damage
+    # stages so the system has visible test cases right away. These
+    # render as colored cylinders for now — the BP pass swaps to
+    # SkeletalMesh with the right decals + idle blends.
+    demo_npcs = [
+        # (offset_x, offset_y, archetype, current_stage, label)
+        (-600, -3300, "hume_m",      "pristine", "VH_Demo_Pristine_Hume"),
+        (-300, -3300, "hume_m",      "bloodied", "VH_Demo_Bloodied_Hume"),
+        (   0, -3300, "hume_m",      "wounded",  "VH_Demo_Wounded_Hume"),
+        ( 300, -3300, "hume_m",      "grievous", "VH_Demo_Grievous_Hume"),
+        ( 600, -3300, "hume_m",      "broken",   "VH_Demo_Broken_Hume"),
+        ( 900, -3300, "mob_goblin",  "wounded",  "VH_Demo_WoundedGoblin"),
+    ]
+    for x, y, archetype, stage, label in demo_npcs:
+        actor = spawn_static_mesh(
+            CYL, (x, y, 100), scale=(0.4, 0.4, 1.7),
+            label=label, folder=folder,
+            tags=[tag, f"VH:{archetype}", f"VH_Stage:{stage}",
+                  "Demoncore_VisibleHealth_Demo"],
+        )
+        if actor:
+            n += 1
+
+    # Demo a few status ailments at current_stage = pristine (so the
+    # player can compare pure ailment cues vs damage cues independently)
+    ailment_demos = [
+        (-600, -3700, "hume_f",    "poison",   "VH_Demo_Poisoned_Hume"),
+        (-300, -3700, "hume_f",    "sleep",    "VH_Demo_Sleeping_Hume"),
+        (   0, -3700, "hume_f",    "paralyze", "VH_Demo_Paralyzed_Hume"),
+        ( 300, -3700, "tarutaru_m","silence",  "VH_Demo_Silenced_Taru"),
+        ( 600, -3700, "elvaan_m",  "petrify",  "VH_Demo_Petrified_Elvaan"),
+        ( 900, -3700, "galka_m",   "doom",     "VH_Demo_Doomed_Galka"),
+    ]
+    for x, y, archetype, ailment, label in ailment_demos:
+        actor = spawn_static_mesh(
+            CYL, (x, y, 100), scale=(0.4, 0.4, 1.7),
+            label=label, folder=folder,
+            tags=[tag, f"VH:{archetype}", "VH_Stage:pristine",
+                  f"VH_Ailment:{ailment}",
+                  "Demoncore_VisibleHealth_Demo"],
+        )
+        if actor:
+            n += 1
+
+    print(f"     OK — {n} actors with VH:<archetype> tags")
+    print("     12 demo NPCs span all 5 damage stages + 6 ailments.")
+    print("     A future BP pass attaches BPC_VisibleHealthState +")
+    print("     BPC_VisibleAilmentState components based on these tags.")
+
+
+# -----------------------------------------------------------------------------
 # Camera framing
 # -----------------------------------------------------------------------------
 
@@ -681,6 +802,7 @@ build_layer_5_actors()
 # System B can place agents within the established world bounds.
 build_system_a_damage_healing()
 build_system_b_ai_density()
+build_system_c_visible_health()
 
 frame_establishing_shot()
 
@@ -696,14 +818,19 @@ print("    Demoncore/Layer_4_Props")
 print("    Demoncore/Layer_5_HeroActors")
 print("    Demoncore/System_A_Destructibles   <-- cross-cutting, see DAMAGE_PHYSICS_HEALING.md")
 print("    Demoncore/System_B_AI_Density      <-- cross-cutting, see AI_WORLD_DENSITY.md")
+print("    Demoncore/System_C_VisibleHealth   <-- cross-cutting, see VISUAL_HEALTH_SYSTEM.md")
 print()
 print("Toggle layers/systems like film comp passes — click the eye icon next")
 print("to a folder to hide/show all actors in that layer/system at once.")
 print()
 print("System A actors carry tags like 'HS:wood:100:5:8' (HP/heal/delay).")
 print("System B actors carry tags like 'AI:2_reflection:vendor_zaldon'.")
-print("Both formats parse cleanly so a downstream BP/server pass can wire")
-print("up real BPC_HealingStructure components and Generative Agent profiles.")
+print("System C actors carry tags like 'VH:hume_m', 'VH_Stage:bloodied',")
+print("    'VH_Ailment:poison'. NO HP/MP bars are visible at runtime —")
+print("    players read the world: posture, blood, limp, breath.")
+print("All formats parse cleanly so a downstream BP/server pass can wire")
+print("up BPC_HealingStructure, Generative Agent profiles, and")
+print("BPC_VisibleHealthState/BPC_VisibleAilmentState components.")
 print()
 print("Save the level: Ctrl+S")
 print("=" * 72)
