@@ -3,20 +3,40 @@
 Snapshot of the upstream repos and their HEAD commits at the time we cloned them.
 Re-run `scripts\CLONE_REPOS.bat` to refresh; this manifest is regenerated on every clone.
 
-| Repo | Upstream | HEAD branch | HEAD commit | Local size |
-|------|----------|-------------|-------------|------------|
-| `ai4animationpy` | https://github.com/facebookresearch/ai4animationpy | `main` | `93eb009dcb71` | ~1.4 GB |
-| `unreal-engine-mcp` | https://github.com/flopperam/unreal-engine-mcp | `main` | `10776882f497` | ~37 MB |
-| `Pathfinder` | https://github.com/xathei/Pathfinder | `master` | `e064edd93c34` | ~18 MB |
-| `FFXI-NavMesh-Builder` | https://github.com/LandSandBoat/FFXI-NavMesh-Builder | `main` | `ec953cec4650` | ~53 MB |
+Generated: 2026-04-29T19:42:50
 
-## What each gives us
+## Zone geometry → 3D mesh
 
-- **`ai4animationpy`** — Python framework for character animation / locomotion using mode-adaptive neural networks. Replaces the static FFXI animation clips with AI-generated motion that adapts to terrain and intent. The 1.4 GB footprint is mostly model checkpoints and motion-capture data.
-- **`unreal-engine-mcp`** — MCP server exposing Unreal Engine 5 editor and runtime as tool calls. Lets chharbot drive UE5 scene assembly, asset import, and Blueprint wiring without manual editor work.
-- **`Pathfinder`** — C# app that loads FFXI client DAT files and emits OBJ + navmesh per zone. The "pull the world out as 3D mesh" half of the *Silmaril 2 — Building NavMeshes and how it works* video.
-- **`FFXI-NavMesh-Builder`** — C# app that consumes LSB collision data and produces OBJ + Recast/Detour navmeshes. Same idea as Pathfinder but tuned to the LSB server we already host.
+| Repo | Upstream | HEAD | Local size |
+|------|----------|------|------------|
+| `FFXI-NavMesh-Builder` | https://github.com/LandSandBoat/FFXI-NavMesh-Builder | `ec953cec4650` | 52.5 MB |
+| `Pathfinder` | https://github.com/xathei/Pathfinder | `e064edd93c34` | 17.3 MB |
 
-## Pinning policy
+## Unreal Engine 5 — AI agent control + plugins
 
-We do NOT pin commits in submodule fashion. Each entry above records what HEAD was the day we cloned it; re-cloning will move forward. If we need to lock against a specific upstream commit (e.g. for reproducibility of a generated asset bundle), we'll capture that decision in the relevant doc under `docs/` and check out the pinned SHA explicitly. The default stance is "track upstream main."
+| Repo | Upstream | HEAD | Local size |
+|------|----------|------|------------|
+| `chongdashu-unreal-mcp` | https://github.com/chongdashu/unreal-mcp | `4e5f00da5073` | 954.6 KB |
+| `KawaiiPhysics` | https://github.com/pafuhana1213/KawaiiPhysics | `eaca75763032` | 215.1 MB |
+| `kvick-UnrealMCP` | https://github.com/kvick-games/UnrealMCP | `f989d0e77a4b` | 557.3 KB |
+| `unreal-engine-mcp` | https://github.com/flopperam/unreal-engine-mcp | `10776882f497` | 35.9 MB |
+
+## AI-driven character motion
+
+| Repo | Upstream | HEAD | Local size |
+|------|----------|------|------------|
+| `ai4animationpy` | https://github.com/facebookresearch/ai4animationpy | `93eb009dcb71` | 1.3 GB |
+| `motion-diffusion-model` | https://github.com/GuyTevet/motion-diffusion-model | `ef8edce6a53c` | 9.1 MB |
+
+## 4K textures + generative art
+
+| Repo | Upstream | HEAD | Local size |
+|------|----------|------|------------|
+| `ComfyUI` | https://github.com/comfyanonymous/ComfyUI | `a164c82913d3` | 119.7 MB |
+| `Real-ESRGAN` | https://github.com/xinntao/Real-ESRGAN | `a4abfb2979a7` | 10.7 MB |
+
+## HD music recreation
+
+| Repo | Upstream | HEAD | Local size |
+|------|----------|------|------------|
+| `ACE-Step-1.5` | https://github.com/ace-step/ACE-Step-1.5 | `6acb121810f8` | 31.5 MB |
