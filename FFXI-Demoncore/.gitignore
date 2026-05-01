@@ -54,3 +54,18 @@ desktop.ini
 # Logs
 *.log
 *.tmp
+
+# UE5 editor scratch — was leaking into git status as ?? floods.
+# Saved/, Intermediate/, Binaries/, DerivedDataCache/ are all
+# session-local and never belong in source control.
+demoncore/Saved/
+demoncore/Intermediate/
+demoncore/Binaries/
+demoncore/DerivedDataCache/
+**/Saved/
+**/Intermediate/
+**/Binaries/
+**/DerivedDataCache/
+**/webcache_*/
+**/*.uproject.bak
+**/*.collection
