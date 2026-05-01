@@ -11,23 +11,42 @@ charm is the per-tier rarity grammar:
     super_rare- the lottery item (0.1-2%)
     ex        - exclusive/cannot be sold; gated by other rules
 
-Treasure Hunter (THF subjob) bumps drop rates per tier — modeled
-here as a multiplicative modifier per-tier so a TH IV THF/THF
-gets a meaningful bump on rares without inflating commons past
-their cap.
+Treasure Hunter (TH) model
+--------------------------
+Demoncore's TH expands beyond classic FFXI's THF subjob trick:
 
-The roll engine is deterministic given an RngPool — the same
-world seed + same kill order produces the same drops, which is
-the property the replay system depends on.
+  base_level       - subjob-derived TH (THF /sub etc.), 0..3 typical
+  equipment_level  - sum of TH bonuses on currently equipped gear
+  skill_level      - skill-point/merit/job-point derived TH
+  proc_level       - in-fight crit-proc bumps that accumulate per
+                       hit, capped so total can't exceed TH 16
+
+The "equipped" stack (base + equipment + skill) caps at TH 9.
+That's the steady-state ceiling. During a fight, every melee hit
+has a chance to PROC TH up by 1, and proc bumps are allowed to
+push total effective TH up to 16. After the fight ends, proc
+resets — that's why high-TH kills feel like an event.
+
+Pets (automatons, wyverns, avatars, fomors-as-mobs in PvP) inherit
+the master's equipment + skill TH while the master has the pet
+deployed. The base subjob trick does NOT transfer (it's a job
+ability, not a gear effect). Master's proc state is what the pet
+benefits from at proc-roll time.
 
 Public surface
 --------------
-    Rarity                  enum (COMMON/UNCOMMON/RARE/SUPER_RARE/EX)
-    DropEntry               immutable: item_id, base_rate, rarity
-    DropTable               mob_class_id + entries + extras
-    ItemDrop                what came out of a roll
-    treasure_hunter_modifier(tier, th_level)  -> multiplier
-    roll_drops(*, table, rng_pool, th_level)  -> list[ItemDrop]
+    Rarity                     enum
+    DropEntry / DropTable / ItemDrop
+    TreasureHunterState        composable TH model
+    MAX_TH_EQUIPPED            ceiling for base+equip+skill stack
+    MAX_TH_CRIT_PROC           ceiling once procs are folded in
+    DEFAULT_TH_PROC_CHANCE     baseline per-hit proc chance
+    effective_th_level(state)  -> 0..16 number for table lookup
+    treasure_hunter_modifier(rarity, th_level) -> float
+    proc_treasure_hunter(state, rng_pool, *, proc_chance)
+                                  -> (procced: bool, new_state)
+    master_th_for_pet(master_state) -> TreasureHunterState
+    roll_drops(*, table, rng_pool, th_level=0)
 """
 from __future__ import annotations
 
@@ -63,12 +82,7 @@ class DropEntry:
 
 @dataclasses.dataclass(frozen=True)
 class DropTable:
-    """A mob's complete drop table.
-
-    `entries` is rolled per kill. Each entry rolls independently;
-    the same kill can drop multiple items (FFXI doesn't have a
-    "one drop per kill" cap; gil counts as one entry too).
-    """
+    """A mob's complete drop table."""
     mob_class_id: str
     entries: tuple[DropEntry, ...]
     label: str = ""
@@ -82,55 +96,170 @@ class ItemDrop:
     """One result of a single drop roll."""
     item_id: str
     rarity: Rarity
-    rolled_against: float             # the threshold the dice cleared
+    rolled_against: float
 
 
-# Treasure Hunter caps per tier — TH only ever HELPS, never lowers
-# a rate, and at high tiers it caps so commons don't go past 100%.
-# Numbers loosely calibrated against retail FFXI tier shifts:
-#   TH I/II/III/IV adds modest, diminishing boosts.
-#   Beyond IV the boost levels off — what TH IV+ buys you is the
-#   re-roll on the rare tier when the first roll fails, but for
-#   simplicity we just bump the multiplier here.
+# -- Treasure Hunter modifier tables --------------------------------
+
+# Cap on the steady-state stack from base + equipment + skill.
+# Demoncore canonical: gear/skill alone never gets you above TH 9.
+MAX_TH_EQUIPPED = 9
+
+# Cap once proc bumps are layered on. THIS is the new ceiling
+# once you start landing in-fight crit procs.
+MAX_TH_CRIT_PROC = 16
+
+MAX_TH_LEVEL = MAX_TH_CRIT_PROC
+
+# Per-rarity, per-th-level multiplier. Common ramps gently, rare
+# benefits the most. EX is always identity — gated by other rules.
 _TH_MODIFIERS: dict[Rarity, dict[int, float]] = {
     Rarity.COMMON: {
         0: 1.00, 1: 1.05, 2: 1.10, 3: 1.13, 4: 1.15,
         5: 1.16, 6: 1.17, 7: 1.18, 8: 1.19, 9: 1.20,
+        # proc territory - gentle further bumps
+        10: 1.21, 11: 1.22, 12: 1.23, 13: 1.24,
+        14: 1.25, 15: 1.26, 16: 1.27,
     },
     Rarity.UNCOMMON: {
         0: 1.00, 1: 1.10, 2: 1.20, 3: 1.27, 4: 1.32,
         5: 1.36, 6: 1.40, 7: 1.43, 8: 1.46, 9: 1.50,
+        10: 1.55, 11: 1.60, 12: 1.65, 13: 1.70,
+        14: 1.75, 15: 1.80, 16: 1.85,
     },
     Rarity.RARE: {
         0: 1.00, 1: 1.20, 2: 1.40, 3: 1.55, 4: 1.65,
         5: 1.74, 6: 1.82, 7: 1.90, 8: 1.97, 9: 2.05,
+        10: 2.15, 11: 2.25, 12: 2.35, 13: 2.45,
+        14: 2.55, 15: 2.65, 16: 2.75,
     },
     Rarity.SUPER_RARE: {
         0: 1.00, 1: 1.25, 2: 1.50, 3: 1.70, 4: 1.85,
         5: 1.97, 6: 2.07, 7: 2.16, 8: 2.24, 9: 2.30,
+        10: 2.45, 11: 2.60, 12: 2.75, 13: 2.90,
+        14: 3.05, 15: 3.20, 16: 3.35,
     },
-    # EX items have fixed gates — TH does not affect them. The
-    # modifier is identity at every TH level.
-    Rarity.EX: {i: 1.0 for i in range(10)},
+    # EX rates are gated by external rules — TH never changes them.
+    Rarity.EX: {i: 1.0 for i in range(MAX_TH_CRIT_PROC + 1)},
 }
-
-MAX_TH_LEVEL = 9
 
 
 def treasure_hunter_modifier(rarity: Rarity, th_level: int) -> float:
-    """Return the multiplicative TH modifier for *rarity* at
-    Treasure Hunter level *th_level* (0..9).
+    """Return the multiplicative TH modifier for *rarity* at TH
+    level *th_level* (0..16).
 
-    Out-of-range th_levels saturate at MAX_TH_LEVEL.
+    Out-of-range th_levels saturate at MAX_TH_CRIT_PROC.
     """
     if th_level < 0:
         raise ValueError(f"th_level {th_level} must be >= 0")
-    clamped = min(th_level, MAX_TH_LEVEL)
+    clamped = min(th_level, MAX_TH_CRIT_PROC)
     return _TH_MODIFIERS[rarity][clamped]
 
 
+# -- Treasure Hunter STATE (the composable model) -------------------
+
+@dataclasses.dataclass(frozen=True)
+class TreasureHunterState:
+    """Composable TH state for a player or pet.
+
+    Components stack to produce an effective TH level. Equipment +
+    skill + base combine into the steady-state level, capped at
+    MAX_TH_EQUIPPED. Proc bumps add on top, capped overall at
+    MAX_TH_CRIT_PROC.
+    """
+    base_level: int = 0
+    equipment_level: int = 0
+    skill_level: int = 0
+    proc_level: int = 0
+
+    def __post_init__(self) -> None:
+        for name in ("base_level", "equipment_level",
+                     "skill_level", "proc_level"):
+            v = getattr(self, name)
+            if v < 0:
+                raise ValueError(f"{name} {v} must be >= 0")
+
+
+def effective_th_level(state: TreasureHunterState) -> int:
+    """Resolve a TreasureHunterState into a single 0..16 level
+    suitable for treasure_hunter_modifier lookup.
+
+    Equipped stack (base + equipment + skill) caps at 9. Procs
+    add on top. Total capped at 16.
+    """
+    equipped = (
+        state.base_level + state.equipment_level + state.skill_level
+    )
+    equipped = min(equipped, MAX_TH_EQUIPPED)
+    total = equipped + state.proc_level
+    return min(total, MAX_TH_CRIT_PROC)
+
+
+# Default per-hit proc chance — a bit generous so chains of hits
+# accumulate visibly during a fight. Tunable per encounter.
+DEFAULT_TH_PROC_CHANCE = 0.10
+
+
+def proc_treasure_hunter(
+    state: TreasureHunterState,
+    rng_pool: RngPool,
+    *,
+    proc_chance: float = DEFAULT_TH_PROC_CHANCE,
+    stream_name: str = STREAM_LOOT_DROPS,
+) -> tuple[bool, TreasureHunterState]:
+    """Roll a TH proc on a melee hit.
+
+    On success, bumps proc_level by 1 unless the resulting effective
+    TH level would exceed MAX_TH_CRIT_PROC. Returns (procced,
+    new_state). On failure, returns (False, state) unchanged.
+
+    proc_chance must be in [0, 1].
+    """
+    if not 0.0 <= proc_chance <= 1.0:
+        raise ValueError("proc_chance must be in [0, 1]")
+    # Already at the absolute cap? Skip the roll.
+    if effective_th_level(state) >= MAX_TH_CRIT_PROC:
+        return False, state
+    rng = rng_pool.stream(stream_name)
+    if rng.random() < proc_chance:
+        bumped = dataclasses.replace(
+            state, proc_level=state.proc_level + 1
+        )
+        # Defensive: if the bump pushes us past the cap (shouldn't
+        # happen given the early-return above), clamp.
+        if effective_th_level(bumped) > MAX_TH_CRIT_PROC:
+            return False, state
+        return True, bumped
+    return False, state
+
+
+def master_th_for_pet(
+    master_state: TreasureHunterState,
+) -> TreasureHunterState:
+    """Derive the pet's TH state from the master's.
+
+    Pets inherit master's equipment_level and skill_level (the gear
+    the master is wearing radiates to the pet). Master's base_level
+    (subjob-derived) does NOT transfer — that's a player-only job
+    ability. Proc state DOES transfer because the pet's hits keep
+    benefiting from the in-fight tally.
+    """
+    return TreasureHunterState(
+        base_level=0,
+        equipment_level=master_state.equipment_level,
+        skill_level=master_state.skill_level,
+        proc_level=master_state.proc_level,
+    )
+
+
+def reset_proc(state: TreasureHunterState) -> TreasureHunterState:
+    """Drop the proc tally back to zero. Call between fights."""
+    return dataclasses.replace(state, proc_level=0)
+
+
+# -- roll engine ---------------------------------------------------
+
 def _effective_rate(entry: DropEntry, th_level: int) -> float:
-    """Compute the post-TH drop rate, clamped to [0, 1]."""
     raw = entry.base_rate * treasure_hunter_modifier(
         entry.rarity, th_level
     )
@@ -146,10 +275,8 @@ def roll_drops(
 ) -> tuple[ItemDrop, ...]:
     """Roll *table* once and return what dropped.
 
-    Each entry rolls an independent percentage. Items drop when
-    their roll is below the post-TH effective rate. Stream is
-    the rng_pool stream — defaults to STREAM_LOOT_DROPS so all
-    loot is reproducible from world_seed alone.
+    Caller passes a single resolved th_level. To compute it from
+    a TreasureHunterState, use effective_th_level().
     """
     out: list[ItemDrop] = []
     rng = rng_pool.stream(stream_name)
@@ -165,10 +292,25 @@ def roll_drops(
     return tuple(out)
 
 
+def roll_drops_for(
+    *,
+    table: DropTable,
+    rng_pool: RngPool,
+    th_state: TreasureHunterState,
+    stream_name: str = STREAM_LOOT_DROPS,
+) -> tuple[ItemDrop, ...]:
+    """Convenience: roll *table* using a TreasureHunterState."""
+    return roll_drops(
+        table=table,
+        rng_pool=rng_pool,
+        th_level=effective_th_level(th_state),
+        stream_name=stream_name,
+    )
+
+
 def drops_count_by_rarity(
     drops: t.Sequence[ItemDrop],
 ) -> dict[Rarity, int]:
-    """Convenience: histogram drops by rarity."""
     bucket: dict[Rarity, int] = {r: 0 for r in Rarity}
     for d in drops:
         bucket[d.rarity] += 1
@@ -180,8 +322,15 @@ __all__ = [
     "DropEntry",
     "DropTable",
     "ItemDrop",
-    "MAX_TH_LEVEL",
+    "TreasureHunterState",
+    "MAX_TH_EQUIPPED", "MAX_TH_CRIT_PROC", "MAX_TH_LEVEL",
+    "DEFAULT_TH_PROC_CHANCE",
+    "effective_th_level",
     "treasure_hunter_modifier",
+    "proc_treasure_hunter",
+    "master_th_for_pet",
+    "reset_proc",
     "roll_drops",
+    "roll_drops_for",
     "drops_count_by_rarity",
 ]
