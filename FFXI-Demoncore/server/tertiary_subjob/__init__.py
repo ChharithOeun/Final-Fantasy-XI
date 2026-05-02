@@ -2,21 +2,31 @@
 
 Demoncore extension to canonical FFXI's main + sub job model: a
 third subjob slot. Unlocked through "The Threefold Path" quest at
-main level 50. The tertiary subjob is always capped at floor(main /
-2) — half the main job's level — which keeps it tactical instead
-of overpowered. Strategic builds get more flexibility (e.g. WAR/
-NIN/WHM for self-Cure on a tank) without trivializing content.
+main level 50.
+
+Tertiary level = floor(min(main, CLASSIC_LEVEL_CAP) / 2). The
+clamp at the classic 99 cap is deliberate: at master levels
+(100-150) the SECONDARY subjob continues to scale (a lvl-150
+main has a lvl-75 sub), but the TERTIARY stays bounded at 49.
+
+Why: a triple-class build at lvl 150 with three full half-mains
+would dominate everything. Holding tertiary at 49 keeps it as
+a meaningful utility slot — self-Cure I-II, Sneak/Invis, basic
+Utsusemi — without making it a third primary. The strategic
+depth lives in *which* tertiary you pick, not in raw power.
+
+Example loadout: RDM/NIN/DNC at lvl 150
+    main      = RDM 150
+    secondary = NIN 75   (main / 2)
+    tertiary  = DNC 49   (min(main, 99) / 2)
 
 Public surface
 --------------
     TERTIARY_UNLOCK_QUEST_ID
     TERTIARY_MIN_MAIN_LEVEL
+    CLASSIC_LEVEL_CAP, MAX_TERTIARY_LEVEL
     tertiary_level_for(main_level) -> int
-    PlayerTertiarySubjob
-        .complete_unlock_quest(main_level)
-        .set_tertiary(job, current_zone_is_town,
-                      main_job, secondary_subjob, available_jobs)
-        .clear()
+    PlayerTertiarySubjob ...
 """
 from __future__ import annotations
 
@@ -31,14 +41,21 @@ TERTIARY_UNLOCK_QUEST_ID = "the_threefold_path"
 # so tertiary opens up alongside the post-Genkai endgame curve.
 TERTIARY_MIN_MAIN_LEVEL = 50
 
+# The classic-cap we clamp tertiary at. Master Levels (100-150)
+# don't grow the tertiary beyond floor(99 / 2) = 49.
+CLASSIC_LEVEL_CAP = 99
+MAX_TERTIARY_LEVEL = CLASSIC_LEVEL_CAP // 2   # 49
+
 
 def tertiary_level_for(*, main_job_level: int) -> int:
-    """Tertiary subjob level = floor(main_job_level / 2).
+    """Tertiary subjob level = floor(min(main, 99) / 2).
 
-    Always clamped at >= 1 once the slot is filled."""
-    if main_job_level < 2:
+    Clamped at >= 1 once the slot is filled, and clamped at
+    MAX_TERTIARY_LEVEL (49) regardless of master-level main."""
+    clamped_main = min(main_job_level, CLASSIC_LEVEL_CAP)
+    if clamped_main < 2:
         return 1
-    return main_job_level // 2
+    return clamped_main // 2
 
 
 @dataclasses.dataclass(frozen=True)
@@ -129,6 +146,7 @@ class PlayerTertiarySubjob:
 
 __all__ = [
     "TERTIARY_UNLOCK_QUEST_ID", "TERTIARY_MIN_MAIN_LEVEL",
+    "CLASSIC_LEVEL_CAP", "MAX_TERTIARY_LEVEL",
     "tertiary_level_for",
     "SetResult", "PlayerTertiarySubjob",
 ]

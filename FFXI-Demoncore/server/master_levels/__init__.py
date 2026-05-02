@@ -48,8 +48,17 @@ MASTER_GENKAI_INTERVAL = 5
 # -- Per-level rewards (applied per level above 99) -------------------
 HP_PER_ML = 25
 MP_PER_ML = 15
-ATTACK_PER_ML = 2
-ACCURACY_PER_ML = 1
+
+# +1 to EVERY hard stat per ML. The seven hard stats are
+# STR/DEX/VIT/AGI/INT/MND/CHR. Derived stats (attack/accuracy/
+# magic damage) all flow naturally from these.
+HARD_STAT_PER_ML = 1
+HARD_STATS = ("str", "dex", "vit", "agi", "int", "mnd", "chr")
+
+# Combat + magic skill caps go up 5 per ML so players can keep
+# skilling up — important because skill levels gate access to
+# weaponskills, songs, ninjutsu, blue magic, etc.
+SKILL_CAP_PER_ML = 5
 
 
 def mexp_for_level(target_level: int) -> int:
@@ -155,12 +164,19 @@ class PlayerMasterLevel:
         return self.levels_above_floor * MP_PER_ML
 
     @property
-    def attack_bonus(self) -> int:
-        return self.levels_above_floor * ATTACK_PER_ML
+    def hard_stat_bonus(self) -> int:
+        """Flat +N applied to every hard stat (STR/DEX/VIT/AGI/INT/MND/CHR)."""
+        return self.levels_above_floor * HARD_STAT_PER_ML
 
     @property
-    def accuracy_bonus(self) -> int:
-        return self.levels_above_floor * ACCURACY_PER_ML
+    def skill_cap_bonus(self) -> int:
+        """How much each combat/magic skill cap is raised."""
+        return self.levels_above_floor * SKILL_CAP_PER_ML
+
+    def stat_bonuses(self) -> dict[str, int]:
+        """Return a dict of {hard_stat_name: bonus} for all 7 stats."""
+        bonus = self.hard_stat_bonus
+        return {s: bonus for s in HARD_STATS}
 
     # ------------------------------------------------------------------
     # MEXP awarding
@@ -223,7 +239,7 @@ __all__ = [
     "MASTER_LEVEL_FLOOR", "MASTER_LEVEL_CEILING",
     "MASTER_GENKAI_INTERVAL",
     "HP_PER_ML", "MP_PER_ML",
-    "ATTACK_PER_ML", "ACCURACY_PER_ML",
+    "HARD_STAT_PER_ML", "HARD_STATS", "SKILL_CAP_PER_ML",
     "mexp_for_level", "is_genkai_milestone",
     "AwardResult", "PlayerMasterLevel",
 ]
