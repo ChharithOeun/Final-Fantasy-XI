@@ -1,0 +1,121 @@
+id: master_crafter_aurelius
+name: Aurelius Vance
+title: the Cosmopolitan
+zone: lower_jeuno
+position: [80, 0, -60]
+tier: 2_reflection
+role: master_crafter_synergy
+race: hume
+gender: m
+voice_profile: /Content/Voices/profiles/aurelius.wav
+
+appearance: |
+  Hume, late forties, dressed like a man who can afford to be
+  underdressed. Rolled-sleeve linen shirt, embroidered Sandorian
+  collar, Bastokan steel buckle on a Windurstian waist sash.
+  Carries a Jeunoan ducal pin no one has ever seen him polish.
+  Salt-and-pepper beard kept neat. Hands are soft on the back,
+  callused on the palm — a craftsman who has earned the right
+  to occasional gentleness.
+
+personality: |
+  Cheerful, a little mercantile, deeply discreet. Aurelius is
+  the only NPC crafter who freely admits he learned everything
+  he knows by stealing it from the other three. He served all
+  four nations as a young itinerant, picked up the loose ends
+  none of them taught their natives, and now sells those loose
+  ends from a Lower Jeuno workbench at a respectful markup.
+
+  Treats every adventurer like a returning customer, even on
+  the first visit. Calls everyone "friend." Means it about
+  twenty percent of the time.
+
+  Knows Argilane, Mokaku, and Tometo-Goro personally. Will not
+  speak ill of any of them. Will quietly arrange a referral if
+  he thinks one of his peers would do better work for a specific
+  commission. Receives a small finder's fee from each, which
+  none of them have ever acknowledged in writing.
+
+starting_memory: |
+  The Quiet Loom would not take my coin, the first time I
+  visited him. He gave me tea instead. The Iron-Tongued sized
+  me up for half a minute and told me I was "presentable, for
+  Jeuno." Mokaku hugged me. I was twenty-three years old. I
+  remember it like it was last week.
+
+mood_axes: [genial, calculating, candid, generous]
+
+schedule:
+  - [06:00, "aurelius_workshop", "open_for_business"]
+  - [08:00, "aurelius_workshop", "morning_commissions"]
+  - [11:00, "lower_jeuno_market", "material_runs"]
+  - [12:00, "neptune_avenue_eatery", "midday_lunch_with_clients"]
+  - [13:00, "aurelius_workshop", "afternoon_commissions"]
+  - [17:00, "duchy_courier_post", "send_referrals_to_peers"]
+  - [18:00, "aurelius_workshop", "evening_synth"]
+  - [21:00, "aurelius_residence", "tea_and_correspondence"]
+
+bark_pool:
+  genial:
+    - "Friend! Always good to see you. Got a slip? Got materials? Let's talk."
+    - "Welcome to Lower Jeuno. The tea is fresh. The prices are not."
+    - "If you've come from Sandy, give my regards to Argilane. He'll deny knowing me."
+  calculating:
+    - "...Hmm. The slip says caster. Tometo-Goro would do better with this. Have you considered Windurst?"
+    - "I can do this for you, but the price will not be small. Synergy with the right party would be cheaper."
+    - "Seven days. One commission at a time. That is the rule. Even for friends."
+  candid:
+    - "I taught myself this trade by listening. Not all of it is mine. Most of it is."
+    - "I will not lie to you. NQ-only is what I can promise. Want +N? Find a party."
+    - "The Jeunoan cartels do not run my forge. Not entirely. About forty percent."
+  generous:
+    - "Take this. No charge. Tell the next adventurer Aurelius said hello."
+    - "If your party falls through, come back. We always have time."
+    - "Argilane will hate me for saying this — but yes, the steel from Bastok works better for body pieces."
+
+service_offering:
+  kind: ambuscade_npc_bypass
+  description: |
+    Aurelius accepts commissions for ANY archetype — he learned
+    a piece of every craft from a piece of every nation. For
+    archetypes the other three crafters specialize in, he will
+    quietly refer adventurers to them ("Mokaku will do better
+    with this one"). The base service is identical: 7 days,
+    NQ-only, 4 R drops, 1.5M gil.
+  accepts_archetypes: [caster, melee, ranger, ninja, blue_mage, puppet, beast, dancer, rune]
+  base_gil_cost: 1500000
+  r_drops_required: 4
+  r_drop_examples:
+    - tonberry_pendant               # any Tonberry stronghold NM
+    - sahagin_chain                  # any Sahagin stronghold NM
+    - orcish_bracers                 # any Orc stronghold NM
+    - fomor_whetstone                # generic Fomor elite NM
+  turnaround_days: 7
+  output_quality_cap: 0
+
+dialog_hooks:
+  on_first_meet: |
+    "Friend! Welcome to my workshop. I am Aurelius. I do this for
+    a living and several other reasons. What have you brought me?"
+  on_commission_start: |
+    "Excellent. Materials on the bench, slip in the slot. Seven
+    days. Don't worry about the calendar — I'll keep yours.
+    Come back next Watersday."
+  on_commission_complete: |
+    "There she is. Quality NQ, as advertised. If you ever need
+    polish work, find a party with a shield. I can refer you
+    to one if you'd like."
+  on_commission_rejected_no_drops: |
+    "Friend. The accounting is short by one drop. I can wait, but
+    the bench cannot. Come back when the count is whole."
+  on_referral_to_peer: |
+    "Hmm. The slip says caster. Lower Jeuno is not where you
+    want this work done. Windurst Woods. Tometo-Goro. Tell him
+    Aurelius sent you. He'll roll his eyes. He will, however,
+    take the commission."
+
+cross_references:
+  peer_crafters:
+    - master_crafter_argilane    # melee specialist (Sandy)
+    - master_crafter_mokaku      # heavy/ranger specialist (Bastok)
+    - master_crafter_tometo_goro # caster specialist (Windy)

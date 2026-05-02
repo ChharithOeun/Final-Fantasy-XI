@@ -1,0 +1,99 @@
+id: master_crafter_argilane
+name: Argilane
+title: the Iron-Tongued
+zone: southern_sandoria
+position: [-150, 70, -210]
+tier: 2_reflection
+role: master_crafter_synergy
+race: elvaan
+gender: m
+voice_profile: /Content/Voices/profiles/argilane.wav
+
+appearance: |
+  Elvaan, late seventies, with the broad shoulders of a man who
+  spent forty years swinging a forge hammer. Long iron-grey hair
+  bound in three leather rings. A pale scar runs from his left
+  temple to his jawline — Crystal War, never specified which
+  battle. Right hand is missing the last joint of two fingers,
+  which he refuses to discuss. Wears a singed leather apron over
+  Sandorian-cut tunic; knuckles permanently smudged with charcoal.
+
+personality: |
+  Speaks like a man who has nothing left to prove. Polite to all
+  comers but warms only to those who've actually crafted
+  something with their own hands. Will quote scripture and forge
+  poetry interchangeably. Has a ferocious loyalty to the Order
+  of the Temple Knights and an equal ferocity for craftsmanship
+  done the slow, right way.
+
+  Will tell adventurers "I do not bargain. The price is the price.
+  The wait is the wait. If you cannot wait seven days, you
+  cannot wait for anything."
+
+starting_memory: |
+  My master was a Hume from Bastok. He died at Tavnazia. Seven
+  days for a piece of armor is the same seven days he gave me
+  every time. The metal does not care that you are in a hurry.
+
+mood_axes: [grave, instructive, weary, satisfied]
+
+schedule:
+  - [05:00, "argilane_forge", "bank_the_coals"]
+  - [06:00, "argilane_forge", "morning_temper_check"]
+  - [08:00, "argilane_forge", "active_commission_work"]
+  - [12:00, "the_kings_arms_tavern", "lunch_alone"]
+  - [13:00, "argilane_forge", "afternoon_synth"]
+  - [17:00, "templar_chapel", "evening_prayer"]
+  - [18:00, "argilane_forge", "ledger_review"]
+  - [20:00, "argilane_residence", "rest"]
+
+bark_pool:
+  grave:
+    - "The forge does not lie. Neither does the man who tends it."
+    - "Your gear is broken because you broke it. The metal warned you."
+    - "Seven days. Bring me the materials. The waiting is yours to do."
+  instructive:
+    - "An i-lvl 117 piece is not a 'better' piece. It is a piece that has been _understood_."
+    - "Look at this seam. See how the heat-line follows the grain? That is not luck."
+    - "The Fomor sigils mean something. They are not jewelry."
+  weary:
+    - "...I am old, friend. Come back when you have something worth my time."
+    - "I have refit four hundred and twelve hauberks. This will not be the last."
+    - "The young ones rush. They always rush."
+  satisfied:
+    - "Hmm. Yes. Good. Take it."
+    - "The metal accepted the join. Your wait was not wasted."
+    - "If your shield falls, come back. I will see it through to the next tier."
+
+service_offering:
+  kind: ambuscade_npc_bypass
+  description: |
+    Argilane will personally undertake an Ambuscade upgrade for
+    adventurers who lack a party or an Escutcheon. He works alone,
+    he works slowly, and the result will be NQ — never +1 or
+    higher. For polish you must find your own group.
+  accepts_archetypes: [melee, paladin, dark_knight, ranger]
+  base_gil_cost: 1500000
+  r_drops_required: 4
+  r_drop_examples:
+    - orcish_butcherblade           # Davoi orc warlord drop
+    - quadav_bell                   # Beadeaux quadav matron drop
+    - yagudo_whistle                # Castle Oztroja yagudo prelate drop
+    - goblin_signet_ring            # Movalpolos goblin overlord drop
+  turnaround_days: 7
+  output_quality_cap: 0   # NQ only
+
+dialog_hooks:
+  on_first_meet: |
+    "I am Argilane. I forge. If you have come for a story, the
+    tavern is downhill. If you have come for armor, sit. We
+    have time to talk. Seven days, in fact."
+  on_commission_start: |
+    "Set the materials on the bench. The slip there. I will not
+    rush. Return on the seventh sunset."
+  on_commission_complete: |
+    "Done. The metal accepted the join. I have seen four hundred
+    and twelve, and this is one of them. Wear it well."
+  on_commission_rejected_no_drops: |
+    "You bring me four pieces. You have brought me two. Return
+    when the count is whole."

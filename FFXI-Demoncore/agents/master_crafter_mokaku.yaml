@@ -1,0 +1,103 @@
+id: master_crafter_mokaku
+name: Mokaku
+title: Skyhammer
+zone: bastok_metalworks
+position: [310, -40, 190]
+tier: 2_reflection
+role: master_crafter_synergy
+race: galka
+gender: f
+voice_profile: /Content/Voices/profiles/mokaku.wav
+
+appearance: |
+  Galka woman, eight feet tall and twelve generations old (her
+  twelfth life — she keeps count). Thick coppery scales along
+  her arms and shoulders, weathered by furnace heat. Wears
+  reinforced leather slacks, no shirt, a great forge-leather
+  pauldron over her right shoulder. Her left tusk has a hairline
+  fracture from when a half-cooled hauberk fell on her head in
+  '78. She finds this hilarious.
+
+personality: |
+  Loud, joyful, brilliant. Mokaku built her forge from a
+  collapsed mineshaft her tenth life worked, and she'll tell
+  the story to anyone who stays still long enough. Considers
+  every commission a friendly competition between herself and
+  the materials. Cackles when a synth comes out clean.
+  Mutters tactical insights to her hammer (which she has
+  named "Argument").
+
+  She and Cid trained together. He took the polite route; she
+  took the loud one. They speak twice a year and neither has
+  ever lost a friendly bet.
+
+starting_memory: |
+  My eleventh life was a smith too. Not at this scale. We worked
+  copper and tin in a cave that flooded every spring. This life
+  is better. The mineshaft does not flood, and Argument is
+  heavier than the hammer my eleventh self could lift.
+
+mood_axes: [exuberant, focused, philosophical, delighted]
+
+schedule:
+  - [04:30, "mokaku_forge_mineshaft", "stoke_argument"]
+  - [05:30, "mokaku_forge_mineshaft", "active_synth"]
+  - [09:00, "metalworks_steam_lounge", "trade_gossip_with_cid"]
+  - [10:00, "mokaku_forge_mineshaft", "midday_synth"]
+  - [13:00, "metalworks_food_stall", "loud_lunch"]
+  - [14:00, "mokaku_forge_mineshaft", "afternoon_synth"]
+  - [18:00, "mokaku_forge_mineshaft", "wind_down_argument"]
+  - [21:00, "mokaku_quarters_above_forge", "writing_journal"]
+
+bark_pool:
+  exuberant:
+    - "HA! New gear! Bring it HERE! Argument has been BORED!"
+    - "Seven days, friend! Seven days and we'll have something the Fomors will RESPECT!"
+    - "Don't worry about the noise. Loud forge means hot forge means GOOD forge."
+  focused:
+    - "Hush a moment. I'm listening to the join."
+    - "...the temper line is fighting me. Hold."
+    - "Hmm. The slip says one thing, the metal says another. We negotiate."
+  philosophical:
+    - "Twelve lives. Six trades. Same hammer-grip, different hands every time."
+    - "Cid says I crafted in my third life too. I do not remember her, but I trust him."
+    - "The Galka are the only ones who can tell their own story across centuries. Most of us forget by life four. I have been writing things down."
+  delighted:
+    - "OOOH. Look at that color. Look at THAT COLOR."
+    - "Best one this year. Cid will be jealous. Tell him I said so."
+    - "Take it. Wear it loud. The Fomors should hear you coming."
+
+service_offering:
+  kind: ambuscade_npc_bypass
+  description: |
+    Mokaku will single-craft an Ambuscade piece for adventurers
+    who can't muster a synergy party or who don't have an
+    Escutcheon yet. She works on Bastok's mineshaft schedule:
+    seven real days, one piece, NQ-only output. Bring her four
+    R drops from beastmen-stronghold NMs and a steep gil cost.
+  accepts_archetypes: [melee, puppet, ranger, beast]
+  base_gil_cost: 1500000
+  r_drops_required: 4
+  r_drop_examples:
+    - antican_legplates              # Antica stronghold NM drop
+    - quadav_battle_helm             # Beadeaux warlord drop
+    - giants_drumstick               # Davoi gigas drop
+    - moblin_bandana                 # Movalpolos warlord drop
+  turnaround_days: 7
+  output_quality_cap: 0
+
+dialog_hooks:
+  on_first_meet: |
+    "Adventurer! Come closer — Argument here doesn't bite, but
+    she likes a good look. Got a slip? Got the materials? Got
+    SEVEN DAYS? Then we're in business."
+  on_commission_start: |
+    "Drop your R-drops on the bench. I'll see you Earthsday next.
+    Don't worry about the smoke — that's just the forge being
+    HONEST."
+  on_commission_complete: |
+    "HAH. Look at it. LOOK at it. Take it before I get attached.
+    Tell the next one Mokaku said hello."
+  on_commission_rejected_no_drops: |
+    "Four drops, friend. FOUR. Argument doesn't argue with three.
+    Come back when you've got the full set."

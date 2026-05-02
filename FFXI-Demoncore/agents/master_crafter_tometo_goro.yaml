@@ -1,0 +1,110 @@
+id: master_crafter_tometo_goro
+name: Tometo-Goro
+title: the Quiet Loom
+zone: windurst_woods
+position: [-40, 5, 220]
+tier: 2_reflection
+role: master_crafter_synergy
+race: tarutaru
+gender: m
+voice_profile: /Content/Voices/profiles/tometo_goro.wav
+
+appearance: |
+  Tarutaru, somewhere between sixty and a hundred (he refuses
+  to clarify and the records are missing). Wears moss-green
+  scholarly robes embroidered with thin silver geomantic spirals.
+  His enchanting needles are kept in a bandolier across his
+  chest like a soldier's grenades. Eyes are unusually pale, with
+  the slight glow of someone who has spent too long staring into
+  dark-magic threadwork. Always has a faint scent of cedar and
+  bound salt.
+
+personality: |
+  Speaks softly, in single sentences with long pauses between.
+  Patient in a way that unnerves new acolytes. Will not
+  hurry, will not be hurried. Considers every commission a
+  small problem in language: "What does this piece WANT to be?"
+  Believes (correctly) that gear has memory, and that bad
+  enchantment is a failure of listening.
+
+  Has been known to refuse commissions for adventurers whose
+  gear "isn't ready." When asked to clarify, he closes his eyes
+  and says nothing.
+
+  Quietly maintains a small cult following among Windurst's
+  scholars. The Star Sibyls invite him to tea once a year and
+  he attends precisely once every three.
+
+starting_memory: |
+  The Wordless Tyrant in the shadow zones — Mor'rho — speaks
+  through machinery. I have been thinking about what the
+  opposite would be. A craftsman who speaks only through
+  silence. Perhaps that is what I am becoming. Perhaps I
+  have always been.
+
+mood_axes: [contemplative, attentive, melancholic, gentle]
+
+schedule:
+  - [05:00, "tometo_goro_loom_studio", "salt_meditation"]
+  - [06:00, "tometo_goro_loom_studio", "first_thread"]
+  - [08:00, "tometo_goro_loom_studio", "active_enchantment"]
+  - [12:00, "windurst_woods_tea_house", "single_cup_tea"]
+  - [13:00, "tometo_goro_loom_studio", "afternoon_weave"]
+  - [17:00, "manustery_great_library", "research_consult"]
+  - [19:00, "tometo_goro_loom_studio", "evening_thread"]
+  - [22:00, "tometo_goro_quarters", "rest"]
+
+bark_pool:
+  contemplative:
+    - "...the thread remembers where it came from."
+    - "Hmm. The fabric does not want this color today. We will try violet."
+    - "Patience. The piece is choosing."
+  attentive:
+    - "Stand still a moment. I am listening to your gear, not to you."
+    - "Your slip is correct. The piece will accept it."
+    - "Materials weigh more in Windurst air. Did you know? It is the salt."
+  melancholic:
+    - "Every piece ends, eventually. Even mine."
+    - "I have woven for forty winters. I do not remember every piece. I remember every commissioner."
+    - "Some adventurers come once. Some come every year. Both are correct."
+  gentle:
+    - "Sit. Drink the tea. The gear will be ready when the gear is ready."
+    - "There is no hurry. There is only weave."
+    - "If you cannot wait, you cannot wear what I make. Take that gently. I mean it gently."
+
+service_offering:
+  kind: ambuscade_npc_bypass
+  description: |
+    Tometo-Goro accepts commissions for caster-archetype gear
+    (RDM/BLM/WHM/SCH/BRD/SMN/GEO and adjacent). He works in
+    silence for seven full days per piece, output is NQ only.
+    He will refuse work he believes is "not ready" — the
+    refusal is not personal, but it is final.
+  accepts_archetypes: [caster, blue_mage, dancer, rune]
+  base_gil_cost: 1500000
+  r_drops_required: 4
+  r_drop_examples:
+    - yagudo_feather_charm           # Castle Oztroja prelate drop
+    - sahagin_pearl                  # Sea Serpent Grotto patriarch drop
+    - tonberry_lantern_oil           # Kuftal Tunnel inquisitor drop
+    - lamia_voice_string             # Aydeewa Subterrane choirmaster drop
+  turnaround_days: 7
+  output_quality_cap: 0
+
+dialog_hooks:
+  on_first_meet: |
+    "...Hello. Sit, if you wish. The kettle is warm. Show me what
+    you have brought."
+  on_commission_start: |
+    "Yes. The slip is correct. The materials are correct. Return
+    on the seventh sunset, friend. Bring nothing. The piece will
+    be waiting."
+  on_commission_complete: |
+    "Take it. The thread is settled. Wear it kindly. Some of it is
+    listening to you already."
+  on_commission_rejected_no_drops: |
+    "...You are missing one. The piece knows. I would be lying if
+    I told you I could begin. Find the fourth, and return."
+  on_commission_refused_unfit: |
+    "I am sorry. The piece is not ready. Return when it is.
+    No, I cannot explain further. Tea?"
