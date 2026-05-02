@@ -1,0 +1,151 @@
+"""High Tier Battlefields (HTBC) — Mission BC tiered fights.
+
+Canonical FFXI revisits classic mission boss fights at four
+escalating tiers (T1 / T2 / T3 / Apex). Each tier requires a
+specific Hourglass key item, has a 30-min timer, and drops
+job-tier-relevant gear and Reforged Materials.
+
+Iconic battlefield families:
+    Throne Room (Shadow Lord encounter line)
+    Promyvion (Carbuncle/Diabolos prime fights)
+    Sea Lord (Aquarius encounter)
+    Wyrm Lord (Bahamut prime)
+    Vrtra Lord (Promathia revisit)
+
+Public surface
+--------------
+    HTBCFamily enum
+    HTBCTier enum (T1/T2/T3/APEX)
+    Hourglass dataclass
+    HTBCEntry / HTBC_CATALOG
+    hourglass_required_for(family, tier) -> Hourglass
+    can_attempt(family, tier, hourglass_held) -> bool
+"""
+from __future__ import annotations
+
+import dataclasses
+import enum
+import typing as t
+
+
+class HTBCFamily(str, enum.Enum):
+    THRONE_ROOM = "throne_room"
+    PROMYVION = "promyvion"
+    SEA_LORD = "sea_lord"
+    WYRM_LORD = "wyrm_lord"
+    VRTRA_LORD = "vrtra_lord"
+
+
+class HTBCTier(str, enum.Enum):
+    T1 = "t1"
+    T2 = "t2"
+    T3 = "t3"
+    APEX = "apex"        # capstone (was canonically called "100yd")
+
+
+@dataclasses.dataclass(frozen=True)
+class Hourglass:
+    hourglass_id: str
+    label: str
+    family: HTBCFamily
+    tier: HTBCTier
+
+
+@dataclasses.dataclass(frozen=True)
+class HTBCEntry:
+    family: HTBCFamily
+    tier: HTBCTier
+    label: str
+    timer_seconds: int
+    party_size_min: int
+    party_size_max: int
+    drop_pool: tuple[str, ...]
+
+
+# Sample HTBC catalog: 5 families × 4 tiers = 20 entries
+_BASE_DROPS = (
+    "reforged_material_lump",
+    "reforged_material_carapace",
+    "reforged_material_orichalcum",
+    "rem_augment_stone",
+)
+
+
+def _drop_for(family: HTBCFamily, tier: HTBCTier) -> tuple[str, ...]:
+    base = _BASE_DROPS[: 1 if tier == HTBCTier.T1
+                          else 2 if tier == HTBCTier.T2
+                          else 3 if tier == HTBCTier.T3
+                          else 4]
+    return base + (f"{family.value}_{tier.value}_unique_drop",)
+
+
+_TIER_PARTY_SIZE: dict[HTBCTier, tuple[int, int]] = {
+    HTBCTier.T1: (3, 6),
+    HTBCTier.T2: (6, 12),
+    HTBCTier.T3: (12, 18),
+    HTBCTier.APEX: (12, 18),
+}
+
+
+def _build_catalog() -> tuple[HTBCEntry, ...]:
+    out: list[HTBCEntry] = []
+    for family in HTBCFamily:
+        for tier in HTBCTier:
+            mn, mx = _TIER_PARTY_SIZE[tier]
+            out.append(HTBCEntry(
+                family=family, tier=tier,
+                label=(
+                    f"{family.value.replace('_', ' ').title()} "
+                    f"({tier.value.upper()})"
+                ),
+                timer_seconds=30 * 60,
+                party_size_min=mn, party_size_max=mx,
+                drop_pool=_drop_for(family, tier),
+            ))
+    return tuple(out)
+
+
+HTBC_CATALOG: tuple[HTBCEntry, ...] = _build_catalog()
+
+
+HTBC_BY_KEY: dict[tuple[HTBCFamily, HTBCTier], HTBCEntry] = {
+    (e.family, e.tier): e for e in HTBC_CATALOG
+}
+
+
+def _hourglass_id(family: HTBCFamily, tier: HTBCTier) -> str:
+    return f"hourglass_{family.value}_{tier.value}"
+
+
+def hourglass_required_for(
+    *, family: HTBCFamily, tier: HTBCTier,
+) -> Hourglass:
+    return Hourglass(
+        hourglass_id=_hourglass_id(family, tier),
+        label=(
+            f"{family.value.replace('_', ' ').title()} "
+            f"{tier.value.upper()} Hourglass"
+        ),
+        family=family, tier=tier,
+    )
+
+
+def can_attempt(
+    *, family: HTBCFamily, tier: HTBCTier,
+    hourglass_held: t.Iterable[str],
+) -> bool:
+    return _hourglass_id(family, tier) in set(hourglass_held)
+
+
+def htbc_entry(
+    *, family: HTBCFamily, tier: HTBCTier,
+) -> t.Optional[HTBCEntry]:
+    return HTBC_BY_KEY.get((family, tier))
+
+
+__all__ = [
+    "HTBCFamily", "HTBCTier",
+    "Hourglass", "HTBCEntry",
+    "HTBC_CATALOG", "HTBC_BY_KEY",
+    "hourglass_required_for", "can_attempt", "htbc_entry",
+]
