@@ -37,6 +37,26 @@ class GhostKind(str, enum.Enum):
     PLACEHOLDER = "placeholder"           # Beta/dev-only feature
 
 
+class RecreateStatus(str, enum.Enum):
+    """Where this zone sits in the Demoncore re-create pipeline."""
+    UNUSED = "unused"            # Not in pipeline yet
+    QUEUED = "queued"            # Marked for re-creation, theme TBD
+    IN_DESIGN = "in_design"      # Designer is fleshing it out
+    IN_BUILD = "in_build"        # Engineering / level building
+    SHIPPED = "shipped"          # Live in-game
+
+
+class ProposedUse(str, enum.Enum):
+    """What we'd turn the unused zone into when we build it."""
+    TBD = "tbd"
+    BEASTMEN_CITY = "beastmen_city"          # complete tribal city
+    SHADOW_NM_ZONE = "shadow_nm_zone"        # NM-only mob zones
+    RAID_ARENA = "raid_arena"                # multi-stage boss venue
+    EXPANSION_HUB = "expansion_hub"          # social / travel hub
+    TUTORIAL_GROUND = "tutorial_ground"      # training/test scenarios
+    HERO_SCREEN = "hero_screen"              # character preview / job change
+
+
 @dataclasses.dataclass(frozen=True)
 class GhostZone:
     ghost_id: str
@@ -47,6 +67,9 @@ class GhostZone:
     variant_count: int = 1
     expansion_candidate: bool = True
     notes: str = ""
+    # Re-create pipeline
+    recreate_status: RecreateStatus = RecreateStatus.QUEUED
+    proposed_use: ProposedUse = ProposedUse.TBD
 
 
 GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
@@ -62,6 +85,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
         notes=(
             "Visible in 2001 promotional trailer. Cut before launch."
         ),
+        proposed_use=ProposedUse.EXPANSION_HUB,
     ),
     GhostZone(
         ghost_id="periqia", name="Periqia",
@@ -72,6 +96,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "ToAU Assault. Strongest candidate for an Aht Urhgan "
             "expansion content drop."
         ),
+        proposed_use=ProposedUse.RAID_ARENA,
     ),
     GhostZone(
         ghost_id="castle_zvahl_keep", name="Castle Zvahl Keep",
@@ -82,6 +107,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Likely planned multi-stage final boss / raid encounter."
         ),
         notes="Demonic theme aligns with Demoncore branding.",
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="hall_of_transference", name="Hall of Transference",
@@ -92,6 +118,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Could anchor a planar-travel network connecting "
             "endgame zones."
         ),
+        proposed_use=ProposedUse.EXPANSION_HUB,
     ),
     GhostZone(
         ghost_id="original_davoi", name="Original Davoi",
@@ -101,6 +128,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Earlier layout of Davoi superseded by shipped version. "
             "Flashback / Wings of the Goddess past-version candidate."
         ),
+        proposed_use=ProposedUse.BEASTMEN_CITY,
     ),
     GhostZone(
         ghost_id="lebros_caverns", name="Lebros Caverns",
@@ -110,6 +138,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Two complete cavern layouts. Canonical landed in ToAU "
             "Assault rotations; second variant never shipped."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="mamool_training_grounds",
@@ -120,6 +149,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Two map variants for Mamool Ja training facilities. "
             "Slots into siege_system as recurring beastman raid origin."
         ),
+        proposed_use=ProposedUse.BEASTMEN_CITY,
     ),
     GhostZone(
         ghost_id="cavern_of_flames", name="Cavern of Flames",
@@ -129,6 +159,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Two variants. Strong fit for fomor-gear / hardcore-death "
             "conversion content."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="leujaom_sanctum", name="Leujaom Sanctum",
@@ -138,6 +169,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Light/holy theme suggests a planned WHM-line storyline "
             "or AF questline that was scoped out."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="carpenters_landing_alt",
@@ -158,6 +190,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Avatar-storyline content potential. Pairs with "
             "avatar_pacts module."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="korroloka_tunnel_alt",
@@ -168,6 +201,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "NM placeholder route candidate. Smuggler-themed quest "
             "content opportunity."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="job_change_area", name="Job Change Area",
@@ -178,6 +212,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "for job changes. Demoncore flagship hero-screen target."
         ),
         notes="Was high-res character model preview pre-launch.",
+        proposed_use=ProposedUse.HERO_SCREEN,
     ),
     GhostZone(
         ghost_id="mt_zhayolm_lonesome_island",
@@ -188,6 +223,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Visible at F-9 with path through Halvung. Pressurized "
             "door never opens. Caedarva-tier NM arena candidate."
         ),
+        proposed_use=ProposedUse.SHADOW_NM_ZONE,
     ),
     GhostZone(
         ghost_id="fort_karugo_narugo", name="Fort Karugo-Narugo",
@@ -197,6 +233,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Complete fort assembly outside visible map bounds. "
             "Hidden assault target or pirate-faction questline."
         ),
+        proposed_use=ProposedUse.BEASTMEN_CITY,
     ),
     GhostZone(
         ghost_id="pashhow_s_blocked", name="Pashhow Marshlands [S] blocked path",
@@ -206,6 +243,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Geometry exists for a path that never opens. "
             "Past-Bastok storyline expansion candidate."
         ),
+        proposed_use=ProposedUse.BEASTMEN_CITY,
     ),
     GhostZone(
         ghost_id="east_ronfaure_s_blocked",
@@ -216,6 +254,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Sister zone to Pashhow [S] — same pattern of "
             "geometry waiting for a door. Past-Sandy storyline."
         ),
+        proposed_use=ProposedUse.BEASTMEN_CITY,
     ),
     GhostZone(
         ghost_id="dummy_map", name="Dummy Map",
@@ -226,6 +265,8 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "Demoncore tutorial training ground or holodeck stage."
         ),
         expansion_candidate=False,
+        recreate_status=RecreateStatus.UNUSED,    # not in pipeline
+        proposed_use=ProposedUse.TUTORIAL_GROUND,
     ),
     GhostZone(
         ghost_id="chocobo_wood", name="Chocobo Wood",
@@ -236,6 +277,7 @@ GHOST_ZONE_CATALOG: tuple[GhostZone, ...] = (
             "exists. FF3-flavored chocobo-breeding habitat that "
             "ties back to chocobo_breeding."
         ),
+        proposed_use=ProposedUse.EXPANSION_HUB,
     ),
 )
 
@@ -279,10 +321,42 @@ def get_ghost(ghost_id: str) -> GhostZone:
     return GHOST_ZONE_BY_ID[ghost_id]
 
 
+def ghost_zones_by_proposed_use(
+    use: ProposedUse,
+) -> tuple[GhostZone, ...]:
+    """Filter the catalog by what we plan to turn the zone into."""
+    return tuple(
+        g for g in GHOST_ZONE_CATALOG if g.proposed_use == use
+    )
+
+
+def ghost_zones_in_pipeline() -> tuple[GhostZone, ...]:
+    """All zones whose recreate_status is NOT 'unused' — i.e. on
+    the build pipeline."""
+    return tuple(
+        g for g in GHOST_ZONE_CATALOG
+        if g.recreate_status != RecreateStatus.UNUSED
+    )
+
+
+def beastmen_city_candidates() -> tuple[GhostZone, ...]:
+    """Convenience: zones flagged as future beastmen cities."""
+    return ghost_zones_by_proposed_use(ProposedUse.BEASTMEN_CITY)
+
+
+def shadow_nm_zone_candidates() -> tuple[GhostZone, ...]:
+    """Convenience: zones flagged as NM-only shadow zones."""
+    return ghost_zones_by_proposed_use(ProposedUse.SHADOW_NM_ZONE)
+
+
 __all__ = [
-    "GhostKind", "GhostZone",
+    "GhostKind", "RecreateStatus", "ProposedUse",
+    "GhostZone",
     "GHOST_ZONE_CATALOG", "GHOST_ZONE_BY_ID",
     "PLACEHOLDER_ZONE_IDS",
     "ghost_zones_by_kind", "expansion_candidates",
+    "ghost_zones_by_proposed_use",
+    "ghost_zones_in_pipeline",
+    "beastmen_city_candidates", "shadow_nm_zone_candidates",
     "total_variant_count", "get_ghost",
 ]
