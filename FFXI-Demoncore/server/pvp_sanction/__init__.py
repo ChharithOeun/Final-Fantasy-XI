@@ -1,9 +1,10 @@
 """PvP Sanction registry — friendly vs hostile classification.
 
-Demoncore policy: Brenner is the ONLY sanctioned (friendly)
-form of PvP. Everything else — open-world outlaw kills,
-Ballista, Conflict-Conflict-style duels — is HOSTILE and
-incurs a penalty.
+Demoncore policy: Brenner AND Ballista are the sanctioned
+(friendly) forms of PvP. Both are formal arena/event PvP with
+their own scoring and reward systems. Everything else — open-
+world outlaw kills, duels, griefing — is HOSTILE and incurs a
+penalty.
 
 Hostile-PvP penalties (cumulative — every kill adds them):
 * Honor loss        (server/honor_reputation HONOR_AXIS)
@@ -36,11 +37,11 @@ import typing as t
 
 class PvpMode(str, enum.Enum):
     """Every distinct PvP mode in Demoncore."""
-    # The ONE sanctioned mode
+    # Sanctioned (friendly) modes
     BRENNER = "brenner"
+    BALLISTA = "ballista"
 
     # Hostile / penalty-bearing modes
-    BALLISTA = "ballista"                   # arena PvP, still hostile
     OUTLAW_OPEN_WORLD = "outlaw_open_world"  # any open-world kill
     OUTLAW_AMBUSH = "outlaw_ambush"          # bounty hunting, hostile
     CONFLICT_DUEL = "conflict_duel"          # 1v1 duels (hostile)
@@ -54,11 +55,11 @@ class PvpClassification(str, enum.Enum):
     HOSTILE = "hostile"
 
 
-# Authoritative classification. Brenner is the only sanctioned
-# entry; everything else is hostile.
+# Authoritative classification. Brenner AND Ballista are
+# sanctioned arena PvP; everything else is hostile.
 _CLASSIFICATION: dict[PvpMode, PvpClassification] = {
     PvpMode.BRENNER: PvpClassification.SANCTIONED,
-    PvpMode.BALLISTA: PvpClassification.HOSTILE,
+    PvpMode.BALLISTA: PvpClassification.SANCTIONED,
     PvpMode.OUTLAW_OPEN_WORLD: PvpClassification.HOSTILE,
     PvpMode.OUTLAW_AMBUSH: PvpClassification.HOSTILE,
     PvpMode.CONFLICT_DUEL: PvpClassification.HOSTILE,
@@ -80,15 +81,6 @@ class HostilePenalty:
 
 
 _PENALTIES: dict[PvpMode, HostilePenalty] = {
-    PvpMode.BALLISTA: HostilePenalty(
-        mode=PvpMode.BALLISTA,
-        honor_loss=10, reputation_loss=5,
-        outlaw_strikes=0, conquest_impact=0,
-        description=(
-            "Ballista is hostile combat against fellow adventurers; "
-            "honor and small reputation hits apply per kill."
-        ),
-    ),
     PvpMode.OUTLAW_OPEN_WORLD: HostilePenalty(
         mode=PvpMode.OUTLAW_OPEN_WORLD,
         honor_loss=40, reputation_loss=25,
