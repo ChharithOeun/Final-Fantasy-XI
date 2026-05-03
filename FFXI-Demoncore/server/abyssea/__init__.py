@@ -295,6 +295,288 @@ class PlayerVisitant:
         return out
 
 
+# =====================================================================
+# Chaos Zone — Demoncore Abyssea revival
+# =====================================================================
+#
+# Canonical Abyssea is dead content; players skip it on the way to
+# Adoulin. To revive it, each Abyssea zone gets a "Chaos Zone" — a
+# high-density quadrant with:
+#
+#   * 3-4x the normal mob density
+#   * Mobs 5-10 levels above the zone's outer ring
+#   * Drop pool keyed to zone-specific NEW DROPS used by quests
+#   * Quests that ONLY accept Chaos Zone drops, with rich rewards
+#     (Cruor, atma keys, Riftworn Pyxis vouchers, gear scraps)
+#
+# Goals: make Abyssea a real grind destination again. Get players
+# back into the WotG content for ML 100-150 prep.
+#
+# Public surface
+# --------------
+#     ChaosZoneSpec / CHAOS_ZONE_SPECS
+#     ChaosDrop / CHAOS_DROP_CATALOG
+#     ChaosQuest / CHAOS_QUEST_CATALOG
+#     PlayerChaosProgress (per-zone drop wallet + quest tracker)
+
+
+@dataclasses.dataclass(frozen=True)
+class ChaosZoneSpec:
+    zone: AbysseaZone
+    quadrant_label: str        # which corner of the map
+    mob_density_multiplier: int    # vs vanilla zone (3 = 3x)
+    mob_level_floor: int           # zone outer ring + N
+    mob_level_ceiling: int
+
+
+CHAOS_ZONE_SPECS: dict[AbysseaZone, ChaosZoneSpec] = {
+    AbysseaZone.LA_THEINE: ChaosZoneSpec(
+        AbysseaZone.LA_THEINE, "northwest cliff",
+        mob_density_multiplier=3, mob_level_floor=82,
+        mob_level_ceiling=87,
+    ),
+    AbysseaZone.KONSCHTAT: ChaosZoneSpec(
+        AbysseaZone.KONSCHTAT, "shattered north pass",
+        mob_density_multiplier=4, mob_level_floor=85,
+        mob_level_ceiling=90,
+    ),
+    AbysseaZone.TAHRONGI: ChaosZoneSpec(
+        AbysseaZone.TAHRONGI, "ridge of faded oaths",
+        mob_density_multiplier=3, mob_level_floor=88,
+        mob_level_ceiling=93,
+    ),
+    AbysseaZone.MISAREAUX: ChaosZoneSpec(
+        AbysseaZone.MISAREAUX, "drowned cathedral basin",
+        mob_density_multiplier=4, mob_level_floor=92,
+        mob_level_ceiling=98,
+    ),
+    AbysseaZone.VUNKERL: ChaosZoneSpec(
+        AbysseaZone.VUNKERL, "spire of the godless",
+        mob_density_multiplier=4, mob_level_floor=95,
+        mob_level_ceiling=99,
+    ),
+}
+
+
+@dataclasses.dataclass(frozen=True)
+class ChaosDrop:
+    drop_id: str
+    label: str
+    zone: AbysseaZone
+    drop_rate_pct: int
+
+
+# Per-zone drops the Chaos Zone introduces. Only the Chaos quadrant
+# spawns mobs that drop these.
+CHAOS_DROP_CATALOG: dict[AbysseaZone, tuple[ChaosDrop, ...]] = {
+    AbysseaZone.LA_THEINE: (
+        ChaosDrop("clouded_la_theine_eye",
+                   "Clouded La Theine Eye",
+                   AbysseaZone.LA_THEINE, 8),
+        ChaosDrop("shattered_oath_fragment",
+                   "Shattered Oath Fragment",
+                   AbysseaZone.LA_THEINE, 4),
+    ),
+    AbysseaZone.KONSCHTAT: (
+        ChaosDrop("scorched_konschtat_horn",
+                   "Scorched Konschtat Horn",
+                   AbysseaZone.KONSCHTAT, 7),
+        ChaosDrop("northern_pass_seal",
+                   "Northern Pass Seal",
+                   AbysseaZone.KONSCHTAT, 3),
+    ),
+    AbysseaZone.TAHRONGI: (
+        ChaosDrop("oath_dust_tahrongi",
+                   "Oath Dust of Tahrongi",
+                   AbysseaZone.TAHRONGI, 7),
+        ChaosDrop("ridge_keyleaf",
+                   "Ridge Keyleaf",
+                   AbysseaZone.TAHRONGI, 3),
+    ),
+    AbysseaZone.MISAREAUX: (
+        ChaosDrop("drowned_choral_marker",
+                   "Drowned Choral Marker",
+                   AbysseaZone.MISAREAUX, 6),
+        ChaosDrop("cathedral_locket",
+                   "Cathedral Locket",
+                   AbysseaZone.MISAREAUX, 2),
+    ),
+    AbysseaZone.VUNKERL: (
+        ChaosDrop("godless_spire_shard",
+                   "Godless Spire Shard",
+                   AbysseaZone.VUNKERL, 5),
+        ChaosDrop("vunkerl_eternal_quill",
+                   "Vunkerl Eternal Quill",
+                   AbysseaZone.VUNKERL, 2),
+    ),
+}
+
+
+@dataclasses.dataclass(frozen=True)
+class ChaosQuestReward:
+    cruor: int = 0
+    riftworn_pyxis_voucher: int = 0
+    atma_key: t.Optional[str] = None
+    title_unlock: t.Optional[str] = None
+
+
+@dataclasses.dataclass(frozen=True)
+class ChaosQuest:
+    quest_id: str
+    zone: AbysseaZone
+    label: str
+    required_drops: tuple[tuple[str, int], ...]
+    reward: ChaosQuestReward
+
+
+# Each zone gets 2 sample chaos quests demonstrating the structure.
+# Real content batch will fill out the long tail.
+CHAOS_QUEST_CATALOG: dict[AbysseaZone, tuple[ChaosQuest, ...]] = {
+    AbysseaZone.LA_THEINE: (
+        ChaosQuest(
+            "la_theine_clouded_offering", AbysseaZone.LA_THEINE,
+            "Clouded Offering",
+            required_drops=(("clouded_la_theine_eye", 5),),
+            reward=ChaosQuestReward(cruor=10000,
+                                     riftworn_pyxis_voucher=2),
+        ),
+        ChaosQuest(
+            "la_theine_oath_keeper", AbysseaZone.LA_THEINE,
+            "Oath Keeper",
+            required_drops=(("shattered_oath_fragment", 3),),
+            reward=ChaosQuestReward(cruor=20000,
+                                     atma_key="atma_savage",
+                                     title_unlock="Oath Keeper"),
+        ),
+    ),
+    AbysseaZone.KONSCHTAT: (
+        ChaosQuest(
+            "konschtat_horn_call", AbysseaZone.KONSCHTAT,
+            "Horn Call of Konschtat",
+            required_drops=(("scorched_konschtat_horn", 5),),
+            reward=ChaosQuestReward(cruor=12000,
+                                     riftworn_pyxis_voucher=2),
+        ),
+        ChaosQuest(
+            "konschtat_pass_seal", AbysseaZone.KONSCHTAT,
+            "The Sealed Pass",
+            required_drops=(("northern_pass_seal", 3),),
+            reward=ChaosQuestReward(cruor=25000,
+                                     atma_key="atma_apocalypse"),
+        ),
+    ),
+    AbysseaZone.TAHRONGI: (
+        ChaosQuest(
+            "tahrongi_dust_collector", AbysseaZone.TAHRONGI,
+            "Dust Collector",
+            required_drops=(("oath_dust_tahrongi", 6),),
+            reward=ChaosQuestReward(cruor=14000,
+                                     riftworn_pyxis_voucher=2),
+        ),
+        ChaosQuest(
+            "tahrongi_ridge_climber", AbysseaZone.TAHRONGI,
+            "Ridge Climber",
+            required_drops=(("ridge_keyleaf", 3),),
+            reward=ChaosQuestReward(cruor=28000,
+                                     atma_key="atma_lone_wolf"),
+        ),
+    ),
+    AbysseaZone.MISAREAUX: (
+        ChaosQuest(
+            "misareaux_choral_finder", AbysseaZone.MISAREAUX,
+            "Choral Finder",
+            required_drops=(("drowned_choral_marker", 6),),
+            reward=ChaosQuestReward(cruor=18000,
+                                     riftworn_pyxis_voucher=3),
+        ),
+        ChaosQuest(
+            "misareaux_locket_keeper", AbysseaZone.MISAREAUX,
+            "The Locket Keeper",
+            required_drops=(("cathedral_locket", 3),),
+            reward=ChaosQuestReward(cruor=35000,
+                                     atma_key="atma_ultimate"),
+        ),
+    ),
+    AbysseaZone.VUNKERL: (
+        ChaosQuest(
+            "vunkerl_spire_offering", AbysseaZone.VUNKERL,
+            "Spire Offering",
+            required_drops=(("godless_spire_shard", 6),),
+            reward=ChaosQuestReward(cruor=22000,
+                                     riftworn_pyxis_voucher=4),
+        ),
+        ChaosQuest(
+            "vunkerl_eternal_chronicle", AbysseaZone.VUNKERL,
+            "The Eternal Chronicle",
+            required_drops=(("vunkerl_eternal_quill", 3),),
+            reward=ChaosQuestReward(cruor=40000,
+                                     atma_key="atma_sanguine_scythe",
+                                     title_unlock="Vana'diel Chronicler"),
+        ),
+    ),
+}
+
+
+def chaos_zone_spec(zone: AbysseaZone) -> t.Optional[ChaosZoneSpec]:
+    return CHAOS_ZONE_SPECS.get(zone)
+
+
+def chaos_drops_for(zone: AbysseaZone) -> tuple[ChaosDrop, ...]:
+    return CHAOS_DROP_CATALOG.get(zone, ())
+
+
+def chaos_quests_for(zone: AbysseaZone) -> tuple[ChaosQuest, ...]:
+    return CHAOS_QUEST_CATALOG.get(zone, ())
+
+
+@dataclasses.dataclass(frozen=True)
+class ChaosTurnIn:
+    accepted: bool
+    quest_id: t.Optional[str] = None
+    cruor_awarded: int = 0
+    riftworn_vouchers_awarded: int = 0
+    atma_key_awarded: t.Optional[str] = None
+    title_unlocked: t.Optional[str] = None
+    reason: t.Optional[str] = None
+
+
+@dataclasses.dataclass
+class PlayerChaosProgress:
+    """Per-player tracker for Chaos Zone drops + quest claims."""
+    player_id: str
+    chaos_drops: dict[str, int] = dataclasses.field(default_factory=dict)
+    completed_quests: list[str] = dataclasses.field(default_factory=list)
+
+    def add_drop(self, *, drop_id: str, quantity: int = 1) -> bool:
+        if quantity <= 0:
+            return False
+        self.chaos_drops[drop_id] = (
+            self.chaos_drops.get(drop_id, 0) + quantity
+        )
+        return True
+
+    def turn_in_quest(self, *, quest: ChaosQuest) -> ChaosTurnIn:
+        if quest.quest_id in self.completed_quests:
+            return ChaosTurnIn(False, quest_id=quest.quest_id,
+                                reason="already completed")
+        for drop_id, qty in quest.required_drops:
+            if self.chaos_drops.get(drop_id, 0) < qty:
+                return ChaosTurnIn(False, quest_id=quest.quest_id,
+                                    reason="missing drops")
+        # Consume drops
+        for drop_id, qty in quest.required_drops:
+            self.chaos_drops[drop_id] -= qty
+        self.completed_quests.append(quest.quest_id)
+        r = quest.reward
+        return ChaosTurnIn(
+            accepted=True, quest_id=quest.quest_id,
+            cruor_awarded=r.cruor,
+            riftworn_vouchers_awarded=r.riftworn_pyxis_voucher,
+            atma_key_awarded=r.atma_key,
+            title_unlocked=r.title_unlock,
+        )
+
+
 __all__ = [
     "DEFAULT_VISITANT_SECONDS", "MAX_VISITANT_SECONDS",
     "ATMA_SLOTS", "ATMACITE_SLOTS", "TIME_EXTENSION_SECONDS",
@@ -303,4 +585,9 @@ __all__ = [
     "ATMA_CATALOG", "ATMACITE_CATALOG",
     "TimeChange", "AtmaChange",
     "cruor_for_kill", "PlayerVisitant",
+    # ---- Chaos Zone
+    "ChaosZoneSpec", "ChaosDrop", "ChaosQuest", "ChaosQuestReward",
+    "CHAOS_ZONE_SPECS", "CHAOS_DROP_CATALOG", "CHAOS_QUEST_CATALOG",
+    "ChaosTurnIn", "PlayerChaosProgress",
+    "chaos_zone_spec", "chaos_drops_for", "chaos_quests_for",
 ]

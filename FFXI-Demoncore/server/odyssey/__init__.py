@@ -38,6 +38,7 @@ class SheolTier(str, enum.Enum):
     A = "sheol_a"
     B = "sheol_b"
     C = "sheol_c"
+    D = "sheol_d"          # Demoncore extension — top-tier above C
 
 
 class GaolGod(str, enum.Enum):
@@ -46,7 +47,8 @@ class GaolGod(str, enum.Enum):
     AREBATI = "arebati"    # wind — spike speed
     NGAI = "ngai"          # ice — frozen control
     KALUNGA = "kalunga"    # dark — recurring death
-    OUROBOROS = "ouroboros"  # final, all elements
+    OUROBOROS = "ouroboros"  # all elements (formerly final)
+    MWIINDI = "mwiindi"    # Demoncore — capstone above Ouroboros
 
 
 # How much volute progress each Sheol tier awards. Gaol gates
@@ -55,6 +57,7 @@ _SHEOL_VOLUTE_AWARD: dict[SheolTier, int] = {
     SheolTier.A: 50,
     SheolTier.B: 150,
     SheolTier.C: 350,
+    SheolTier.D: 800,
 }
 
 
@@ -66,6 +69,7 @@ _GAOL_VOLUTE_GATE: dict[GaolGod, int] = {
     GaolGod.NGAI: 2500,
     GaolGod.KALUNGA: 3500,
     GaolGod.OUROBOROS: 5000,
+    GaolGod.MWIINDI: 8000,
 }
 
 
@@ -74,6 +78,7 @@ _SHEOL_SEGMENT_AWARD: dict[SheolTier, int] = {
     SheolTier.A: 800,
     SheolTier.B: 2000,
     SheolTier.C: 5000,
+    SheolTier.D: 12000,
 }
 
 
@@ -120,6 +125,13 @@ SHEOL_CATALOG: tuple[SheolEntry, ...] = (
         segment_award=_SHEOL_SEGMENT_AWARD[SheolTier.C],
         volute_award=_SHEOL_VOLUTE_AWARD[SheolTier.C],
     ),
+    SheolEntry(
+        SheolTier.D, "Sheol D — Apex Veil",
+        party_size_min=12, party_size_max=18,
+        timer_seconds=60 * 60,
+        segment_award=_SHEOL_SEGMENT_AWARD[SheolTier.D],
+        volute_award=_SHEOL_VOLUTE_AWARD[SheolTier.D],
+    ),
 )
 
 
@@ -160,13 +172,23 @@ GAOL_CATALOG: tuple[GaolEntry, ...] = (
                     "su5_sch_robe", "gaol_card_kalunga"),
     ),
     GaolEntry(
-        GaolGod.OUROBOROS, "Ouroboros (capstone, all elements)",
+        GaolGod.OUROBOROS, "Ouroboros (all elements)",
         volute_required=_GAOL_VOLUTE_GATE[GaolGod.OUROBOROS],
         party_size_min=18, party_size_max=18,
         drop_pool=("ouroboros_relic_card",
                     "ouroboros_empyrean_card",
                     "ouroboros_mythic_card",
                     "gaol_card_ouroboros"),
+    ),
+    GaolEntry(
+        GaolGod.MWIINDI, "Mwiindi (Demoncore capstone — beyond elements)",
+        volute_required=_GAOL_VOLUTE_GATE[GaolGod.MWIINDI],
+        party_size_min=18, party_size_max=18,
+        drop_pool=("mwiindi_prime_card",
+                    "mwiindi_aeonic_card",
+                    "mwiindi_relic_plus_card",
+                    "shadow_genkai_progress_marker",
+                    "gaol_card_mwiindi"),
     ),
 )
 
@@ -187,6 +209,9 @@ def gaol_entry(god: GaolGod) -> t.Optional[GaolEntry]:
     return GAOL_BY_GOD.get(god)
 
 
+SHEOL_RUNS_PER_VANA_DAY = 3   # Demoncore cap (was canonical-uncapped)
+
+
 @dataclasses.dataclass
 class PlayerOdysseyProgress:
     player_id: str
@@ -196,6 +221,9 @@ class PlayerOdysseyProgress:
     sheol_clears: dict[SheolTier, int] = dataclasses.field(
         default_factory=dict,
     )
+    # Per-day Sheol throttle
+    last_sheol_day: int = -1
+    sheol_runs_today: int = 0
 
     def award_segments(self, *, amount: int) -> bool:
         if amount <= 0:
@@ -209,9 +237,26 @@ class PlayerOdysseyProgress:
         self.segments -= amount
         return True
 
-    def complete_sheol(self, *, tier: SheolTier) -> int:
+    def can_run_sheol(self, *, current_vana_day: int) -> bool:
+        if self.last_sheol_day != current_vana_day:
+            return True
+        return self.sheol_runs_today < SHEOL_RUNS_PER_VANA_DAY
+
+    def complete_sheol(
+        self, *, tier: SheolTier,
+        current_vana_day: t.Optional[int] = None,
+    ) -> int:
         """Bump volute + award segments for a Sheol clear. Returns
-        new total volute."""
+        new total volute. When current_vana_day is provided, the
+        per-day cap (3 runs) is enforced; passing None preserves
+        the legacy uncapped behavior for older callers."""
+        if current_vana_day is not None:
+            if self.last_sheol_day != current_vana_day:
+                self.last_sheol_day = current_vana_day
+                self.sheol_runs_today = 0
+            if self.sheol_runs_today >= SHEOL_RUNS_PER_VANA_DAY:
+                return self.moglophone_volute
+            self.sheol_runs_today += 1
         entry = SHEOL_BY_TIER[tier]
         self.moglophone_volute += entry.volute_award
         self.segments += entry.segment_award
@@ -235,6 +280,7 @@ __all__ = [
     "SheolEntry", "GaolEntry",
     "SHEOL_CATALOG", "GAOL_CATALOG",
     "SHEOL_BY_TIER", "GAOL_BY_GOD",
+    "SHEOL_RUNS_PER_VANA_DAY",
     "sheol_entry", "gaol_entry",
     "PlayerOdysseyProgress",
 ]

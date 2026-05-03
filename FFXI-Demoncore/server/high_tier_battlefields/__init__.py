@@ -34,6 +34,9 @@ class HTBCFamily(str, enum.Enum):
     SEA_LORD = "sea_lord"
     WYRM_LORD = "wyrm_lord"
     VRTRA_LORD = "vrtra_lord"
+    # ---- Demoncore ML-tier families (entrance in shadow zones)
+    SHADOW_CONCLAVE = "shadow_conclave"      # ML 100-125
+    DEMON_LORD = "demon_lord"                # ML 125-150
 
 
 class HTBCTier(str, enum.Enum):
@@ -41,6 +44,14 @@ class HTBCTier(str, enum.Enum):
     T2 = "t2"
     T3 = "t3"
     APEX = "apex"        # capstone (was canonically called "100yd")
+    # ---- Demoncore ML-tier sub-tiers — only valid for ML families.
+    # Five steps across the lvl 100-150 range; each gates higher
+    # ML drops.
+    ML_100 = "ml_100"    # entry — recommended ML 5-ish
+    ML_110 = "ml_110"
+    ML_120 = "ml_120"
+    ML_130 = "ml_130"
+    ML_150 = "ml_150"    # capstone
 
 
 @dataclasses.dataclass(frozen=True)
@@ -71,7 +82,41 @@ _BASE_DROPS = (
 )
 
 
+_ML_FAMILIES: tuple[HTBCFamily, ...] = (
+    HTBCFamily.SHADOW_CONCLAVE,
+    HTBCFamily.DEMON_LORD,
+)
+
+_ML_TIERS: tuple[HTBCTier, ...] = (
+    HTBCTier.ML_100,
+    HTBCTier.ML_110,
+    HTBCTier.ML_120,
+    HTBCTier.ML_130,
+    HTBCTier.ML_150,
+)
+
+_LEGACY_TIERS: tuple[HTBCTier, ...] = (
+    HTBCTier.T1, HTBCTier.T2, HTBCTier.T3, HTBCTier.APEX,
+)
+
+
 def _drop_for(family: HTBCFamily, tier: HTBCTier) -> tuple[str, ...]:
+    if tier in _ML_TIERS:
+        # Each ML sub-tier gets richer drops as the level rises
+        ml_index = _ML_TIERS.index(tier)
+        common = _BASE_DROPS + ("shadow_fragment_common",)
+        if ml_index >= 1:
+            common = common + ("shadow_fragment_refined",)
+        if ml_index >= 2:
+            common = common + ("shadow_fragment_pristine",)
+        if ml_index >= 3:
+            common = common + ("tier_vi_spell_scroll_random",)
+        if ml_index >= 4:
+            common = common + (
+                "shadow_fragment_eternal",
+                f"{family.value}_capstone_drop",
+            )
+        return common + (f"{family.value}_{tier.value}_unique_drop",)
     base = _BASE_DROPS[: 1 if tier == HTBCTier.T1
                           else 2 if tier == HTBCTier.T2
                           else 3 if tier == HTBCTier.T3
@@ -84,13 +129,22 @@ _TIER_PARTY_SIZE: dict[HTBCTier, tuple[int, int]] = {
     HTBCTier.T2: (6, 12),
     HTBCTier.T3: (12, 18),
     HTBCTier.APEX: (12, 18),
+    HTBCTier.ML_100: (12, 18),
+    HTBCTier.ML_110: (12, 18),
+    HTBCTier.ML_120: (12, 18),
+    HTBCTier.ML_130: (18, 18),
+    HTBCTier.ML_150: (18, 18),
 }
 
 
 def _build_catalog() -> tuple[HTBCEntry, ...]:
     out: list[HTBCEntry] = []
     for family in HTBCFamily:
-        for tier in HTBCTier:
+        is_ml_family = family in _ML_FAMILIES
+        applicable_tiers = (
+            _ML_TIERS if is_ml_family else _LEGACY_TIERS
+        )
+        for tier in applicable_tiers:
             mn, mx = _TIER_PARTY_SIZE[tier]
             out.append(HTBCEntry(
                 family=family, tier=tier,

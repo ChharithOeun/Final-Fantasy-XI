@@ -35,6 +35,7 @@ class VoidwalkerTier(str, enum.Enum):
     T2 = "t2"
     T3 = "t3"
     T4 = "t4"
+    T5 = "t5"     # endgame — only spawns in unreleased shadow zones
 
 
 class VoidwalkerRegion(str, enum.Enum):
@@ -47,14 +48,20 @@ class VoidwalkerRegion(str, enum.Enum):
     KOLSHUSHU = "kolshushu"
     ARAGONEU = "aragoneu"
     FAUREGANDI = "fauregandi"
+    # ---- Unreleased "shadow" zones — host T5 voidwalkers
+    SHADOW_REACHES = "shadow_reaches"
+    HOLLOW_PINNACLE = "hollow_pinnacle"
+    UNDERDEEP_SPIRES = "underdeep_spires"
 
 
 class VoidstoneKind(str, enum.Enum):
-    """Each region has its own family of voidstones tiered T1-T4."""
+    """Each region has its own family of voidstones tiered T1-T5."""
     CLEAR = "clear"          # T1 — common
     AMBER = "amber"          # T2 — uncommon
     SAPPHIRE = "sapphire"    # T3 — rare
     OBSIDIAN = "obsidian"    # T4 — legendary
+    SHADOW = "shadow"        # T5 — drops only from T4 kills in
+                              #      unreleased shadow zones
 
 
 _TIER_FOR_STONE: dict[VoidstoneKind, VoidwalkerTier] = {
@@ -62,6 +69,7 @@ _TIER_FOR_STONE: dict[VoidstoneKind, VoidwalkerTier] = {
     VoidstoneKind.AMBER: VoidwalkerTier.T2,
     VoidstoneKind.SAPPHIRE: VoidwalkerTier.T3,
     VoidstoneKind.OBSIDIAN: VoidwalkerTier.T4,
+    VoidstoneKind.SHADOW: VoidwalkerTier.T5,
 }
 
 
@@ -69,8 +77,17 @@ _DROP_NEXT_STONE: dict[VoidstoneKind, t.Optional[VoidstoneKind]] = {
     VoidstoneKind.CLEAR: VoidstoneKind.AMBER,
     VoidstoneKind.AMBER: VoidstoneKind.SAPPHIRE,
     VoidstoneKind.SAPPHIRE: VoidstoneKind.OBSIDIAN,
-    VoidstoneKind.OBSIDIAN: None,    # T4 is the cap
+    VoidstoneKind.OBSIDIAN: VoidstoneKind.SHADOW,   # T4 -> T5 stone
+    VoidstoneKind.SHADOW: None,                     # T5 caps the chain
 }
+
+
+# T5 voidwalker NMs only exist in the three unreleased shadow zones.
+T5_REGIONS: tuple[VoidwalkerRegion, ...] = (
+    VoidwalkerRegion.SHADOW_REACHES,
+    VoidwalkerRegion.HOLLOW_PINNACLE,
+    VoidwalkerRegion.UNDERDEEP_SPIRES,
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -94,35 +111,58 @@ _SAMPLE_REGIONS = (VoidwalkerRegion.RONFAURE,
 
 def _drop_pool_for(tier: VoidwalkerTier,
                     region: VoidwalkerRegion) -> tuple[str, ...]:
-    base = (
-        "riftworn_pyxis",
-        f"voidstone_{_DROP_NEXT_STONE[VoidstoneKind.CLEAR].value}"
-        if tier == VoidwalkerTier.T1 else
-        f"voidstone_{_DROP_NEXT_STONE[VoidstoneKind.AMBER].value}"
-        if tier == VoidwalkerTier.T2 else
-        f"voidstone_{_DROP_NEXT_STONE[VoidstoneKind.SAPPHIRE].value}"
-        if tier == VoidwalkerTier.T3 else
-        "voidwalker_relic_dust",
+    # Determine the next-stone drop based on this tier's stone
+    tier_stone = next(
+        s for s, t in _TIER_FOR_STONE.items() if t == tier
     )
+    nxt = _DROP_NEXT_STONE.get(tier_stone)
+    nxt_drop = (
+        f"voidstone_{nxt.value}" if nxt is not None
+        else "voidwalker_eternal_essence"   # T5 cap drop
+    )
+    base = ("riftworn_pyxis", nxt_drop)
     return base + (f"voidwalker_{tier.value}_{region.value}_drop",)
+
+
+# T1-T4 distribution: 3 sample core regions
+_T1_T4_PARTY_SIZE: dict[VoidwalkerTier, tuple[int, int]] = {
+    VoidwalkerTier.T1: (1, 6),
+    VoidwalkerTier.T2: (3, 6),
+    VoidwalkerTier.T3: (6, 6),
+    VoidwalkerTier.T4: (6, 18),
+    VoidwalkerTier.T5: (12, 18),
+}
 
 
 def _build_catalog() -> tuple[VoidwalkerNM, ...]:
     out: list[VoidwalkerNM] = []
+    # T1-T4 in core sample regions
     for region in _SAMPLE_REGIONS:
-        for tier in VoidwalkerTier:
-            min_party = {
-                VoidwalkerTier.T1: 1, VoidwalkerTier.T2: 3,
-                VoidwalkerTier.T3: 6, VoidwalkerTier.T4: 6,
-            }[tier]
-            max_party = 6 if tier != VoidwalkerTier.T4 else 18
+        for tier in (VoidwalkerTier.T1, VoidwalkerTier.T2,
+                      VoidwalkerTier.T3, VoidwalkerTier.T4):
+            mn, mx = _T1_T4_PARTY_SIZE[tier]
             out.append(VoidwalkerNM(
                 nm_id=f"voidwalker_{region.value}_{tier.value}",
-                label=f"Voidwalker NM {tier.value.upper()} ({region.value})",
+                label=f"Voidwalker NM {tier.value.upper()} "
+                       f"({region.value})",
                 region=region, tier=tier,
-                party_size_min=min_party, party_size_max=max_party,
+                party_size_min=mn, party_size_max=mx,
                 drop_pool=_drop_pool_for(tier, region),
             ))
+    # T5 only in shadow zones — one NM per shadow zone, each named
+    # after the zone for thematic flavor.
+    for region in T5_REGIONS:
+        mn, mx = _T1_T4_PARTY_SIZE[VoidwalkerTier.T5]
+        out.append(VoidwalkerNM(
+            nm_id=f"voidwalker_{region.value}_t5",
+            label=(
+                f"Voidwalker T5 — "
+                f"{region.value.replace('_', ' ').title()}"
+            ),
+            region=region, tier=VoidwalkerTier.T5,
+            party_size_min=mn, party_size_max=mx,
+            drop_pool=_drop_pool_for(VoidwalkerTier.T5, region),
+        ))
     return tuple(out)
 
 
@@ -157,5 +197,6 @@ __all__ = [
     "VoidwalkerTier", "VoidwalkerRegion", "VoidstoneKind",
     "VoidwalkerNM",
     "VOIDWALKER_CATALOG", "NM_BY_REGION_TIER",
+    "T5_REGIONS",
     "pop_nm", "is_voidstone_compatible",
 ]

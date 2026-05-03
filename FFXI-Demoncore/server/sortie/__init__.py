@@ -28,7 +28,7 @@ import enum
 import typing as t
 
 
-SORTIES_PER_VANA_DAY = 2
+SORTIES_PER_VANA_DAY = 3
 SORTIE_TIMER_SECONDS = 60 * 60       # 1 hour each
 
 

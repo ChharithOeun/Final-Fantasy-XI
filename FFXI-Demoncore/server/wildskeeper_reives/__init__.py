@@ -40,6 +40,10 @@ class Wildskeeper(str, enum.Enum):
     WARDER = "warder"
     HRIATA = "hriata"
     BELPHOEBE = "belphoebe"
+    # ---- Demoncore extension — new shadow-zone wildskeepers
+    VOLDYNE = "voldyne"           # shadow-aspect
+    SKARMIR = "skarmir"           # chocobo-woods overlord
+    QUENIVAR = "quenivar"         # ancient-ruins capstone
 
 
 @dataclasses.dataclass(frozen=True)
@@ -80,8 +84,32 @@ WILDSKEEPER_CATALOG: tuple[WildskeeperEntry, ...] = (
     WildskeeperEntry(
         Wildskeeper.BELPHOEBE, "Belphoebe",
         zone="sih_gates", element="light",
-        bayld_pool=BAYLD_BASE_POOL * 2,   # capstone, double pool
+        bayld_pool=BAYLD_BASE_POOL * 2,   # SoA capstone, double pool
         drop_pool=("belphoebe_halo", "light_ore", "starseed"),
+    ),
+    # ---- Demoncore — new shadow-zone wildskeepers
+    WildskeeperEntry(
+        Wildskeeper.VOLDYNE, "Voldyne, the Shadow-Mantled Saurian",
+        zone="shadow_charnel_ridge", element="dark",
+        bayld_pool=BAYLD_BASE_POOL * 2,
+        drop_pool=("voldyne_mantle_shred", "shadow_ore",
+                    "voidwoven_essence",
+                    "voidstone_shadow"),
+    ),
+    WildskeeperEntry(
+        Wildskeeper.SKARMIR, "Skarmir, the Roost-Tyrant",
+        zone="chocobo_woods", element="wind",
+        bayld_pool=BAYLD_BASE_POOL * 2,
+        drop_pool=("skarmir_pinion_feather", "tyrant_chocobo_egg",
+                    "wind_ore", "chocobo_breeding_certificate"),
+    ),
+    WildskeeperEntry(
+        Wildskeeper.QUENIVAR, "Quenivar, Architect of Ruined Time",
+        zone="hollow_pinnacle", element="ice",
+        bayld_pool=BAYLD_BASE_POOL * 3,   # full Demoncore capstone
+        drop_pool=("quenivar_keystone", "ruin_chronograph",
+                    "ice_ore", "shadow_fragment_eternal",
+                    "tier_vi_spell_scroll_random"),
     ),
 )
 
