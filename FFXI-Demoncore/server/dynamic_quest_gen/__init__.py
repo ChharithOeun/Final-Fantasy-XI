@@ -8,6 +8,23 @@ publishes a quest. When the need is resolved (player turns in
 lumber, or the daughter returns home), the quest is closed —
 even mid-flight, even if no player took it.
 
+NPCs run their own daily routines (npc_daily_routines), so a
+quest is offered AT the NPC's currently-active waypoint at the
+current hour. To accept a quest, the player has to physically
+find the NPC at their scheduled location — the shopkeeper at
+the stall during business hours, the patrol guard on his beat,
+the priest at the chapel during morning prayer. Same goes for
+turn-in: bring the goods to where the NPC actually is.
+
+XP doctrine
+-----------
+Quest turn-ins do NOT pay XP. In Demoncore, XP is earned by
+DOING the work — combat XP from kills (exp_chain), skill-up
+XP from gathering / crafting / casting (skill_levels). A quest
+turn-in pays gil + items + faction reputation, never raw XP.
+This keeps grinding honest: completing 10 quests doesn't
+shortcut the actual time-on-task progression curve.
+
 Need model
 ----------
 Each NPC publishes a `NeedSnapshot` each tick — a typed need with
@@ -29,9 +46,12 @@ exposes the surface the orchestrator wires up:
     engine.publish_need(npc_id, need)
     engine.tick(now_seconds)        — generates / closes quests
     engine.open_quests_for(npc_id)
-    engine.player_accept(player_id, quest_id)
+    engine.giver_waypoint(npc_id, hour)  — where to find the NPC
+    engine.player_accept(player_id, quest_id,
+                          player_at_waypoint=..., now_hour=...)
     engine.player_progress(player_id, quest_id, objective_idx, +n)
-    engine.player_turn_in(player_id, quest_id)
+    engine.player_turn_in(player_id, quest_id,
+                           player_at_waypoint=..., now_hour=...)
 
 Public surface
 --------------
@@ -39,6 +59,7 @@ Public surface
     NeedSnapshot dataclass — what the NPC's AI publishes
     ObjectiveKind enum
     QuestObjective dataclass
+    QuestReward dataclass — gil + items + reputation, NO XP
     DynamicQuest dataclass
     QuestEngine — the loop
 """
@@ -47,6 +68,8 @@ from __future__ import annotations
 import dataclasses
 import enum
 import typing as t
+
+from server.npc_daily_routines import NPCRoutineRegistry
 
 
 GENERATION_THRESHOLD = 60       # urgency to spawn a quest
@@ -129,10 +152,27 @@ class QuestObjective:
 
 @dataclasses.dataclass
 class QuestReward:
+    """Quest turn-in payout.
+
+    NOTE: There is intentionally NO `xp` field. In Demoncore, XP
+    is earned by doing the work — combat XP from kills, skill-up
+    XP from gathering / crafting / casting. Quest turn-ins reward
+    gil, items, and faction reputation only.
+    """
     gil: int = DEFAULT_REWARD_GIL
     reputation_delta: int = DEFAULT_REWARD_REPUTATION
     item_id: str = ""
     item_count: int = 0
+    # Explicit doctrine marker — kept as a constant so a stray
+    # caller can't sneak XP onto a quest reward.
+    xp: int = 0
+
+    def __post_init__(self) -> None:
+        if self.xp != 0:
+            raise ValueError(
+                "Quest rewards must not carry XP — XP is earned "
+                "from doing the work, not from turn-in.",
+            )
 
 
 @dataclasses.dataclass
@@ -168,6 +208,10 @@ class TurnInResult:
 @dataclasses.dataclass
 class QuestEngine:
     quest_lifetime_seconds: float = 60 * 60 * 24    # 24 game-hours
+    # Optional cross-link to NPC schedules. When set, the engine
+    # enforces "find the NPC at their currently-scheduled
+    # waypoint to accept or turn in a quest".
+    routine_registry: t.Optional[NPCRoutineRegistry] = None
     _needs: dict[
         tuple[str, NeedKind], NeedSnapshot,
     ] = dataclasses.field(default_factory=dict)
@@ -278,11 +322,60 @@ class QuestEngine:
             if q.is_active(now_seconds=now_seconds)
         )
 
+    def giver_waypoint(
+        self, *, npc_id: str, hour: int,
+    ) -> t.Optional[str]:
+        """Where the NPC is RIGHT NOW (per their schedule). The
+        player must be at this waypoint to accept / turn in.
+        Returns None when no schedule is bound (legacy mode)."""
+        if self.routine_registry is None:
+            return None
+        ar = self.routine_registry.active_routine(
+            npc_id=npc_id, hour=hour,
+        )
+        if ar is None:
+            return None
+        return ar.waypoint_id
+
+    def _waypoint_check(
+        self, *, npc_id: str, player_at_waypoint: t.Optional[str],
+        now_hour: t.Optional[int],
+    ) -> tuple[bool, t.Optional[str]]:
+        """Returns (ok, reason). ok=False with a reason when the
+        registry is wired and the player isn't at the right
+        waypoint. ok=True when the registry is unwired (legacy)
+        OR the player is at the right place."""
+        if self.routine_registry is None:
+            return True, None
+        if now_hour is None or player_at_waypoint is None:
+            return False, "must specify player_at_waypoint and now_hour"
+        ar = self.routine_registry.active_routine(
+            npc_id=npc_id, hour=now_hour,
+        )
+        if ar is None:
+            return False, f"{npc_id} has no schedule for hour {now_hour}"
+        if ar.waypoint_id != player_at_waypoint:
+            return False, (
+                f"{npc_id} is at {ar.waypoint_id}, "
+                f"player is at {player_at_waypoint}"
+            )
+        return True, None
+
     def player_accept(
         self, *, player_id: str, quest_id: str,
+        player_at_waypoint: t.Optional[str] = None,
+        now_hour: t.Optional[int] = None,
     ) -> bool:
         q = self._quests.get(quest_id)
         if q is None or q.completed or q.cancelled:
+            return False
+        # Schedule check — find the NPC where they actually are
+        ok, _reason = self._waypoint_check(
+            npc_id=q.npc_id,
+            player_at_waypoint=player_at_waypoint,
+            now_hour=now_hour,
+        )
+        if not ok:
             return False
         if q.accepted_by is not None:
             return q.accepted_by == player_id
@@ -307,6 +400,8 @@ class QuestEngine:
 
     def player_turn_in(
         self, *, player_id: str, quest_id: str,
+        player_at_waypoint: t.Optional[str] = None,
+        now_hour: t.Optional[int] = None,
     ) -> TurnInResult:
         q = self._quests.get(quest_id)
         if q is None:
@@ -321,6 +416,16 @@ class QuestEngine:
             return TurnInResult(False, reason="quest cancelled")
         if not q.all_objectives_done():
             return TurnInResult(False, reason="objectives incomplete")
+        # NPC must be present at their scheduled waypoint
+        ok, reason = self._waypoint_check(
+            npc_id=q.npc_id,
+            player_at_waypoint=player_at_waypoint,
+            now_hour=now_hour,
+        )
+        if not ok:
+            return TurnInResult(
+                False, reason=reason or "wrong waypoint",
+            )
         q.completed = True
         return TurnInResult(True, reward=q.reward)
 

@@ -1,8 +1,25 @@
 """Regen / resting — sit-to-rest HP/MP regen rates + zone modifiers.
 
-Sitting (Heal command) ramps HP/MP regen over time. Cities heal
-faster than wilderness. Food adds a regen bonus. Regen/Refresh
-status effects stack additively with the base rates.
+Sitting (/heal) ramps HP/MP regen over time. Cities heal faster
+than wilderness. Food adds a regen bonus. Regen/Refresh status
+effects stack additively with the base rates.
+
+Demoncore tempo
+---------------
+The base FFXI rates are too slow for Demoncore's tempo (10x mob
+density, faster auto-attacks, higher respawn). The healing rate
+has been pumped to keep up:
+
+* TEMPO_MULTIPLIER = 3.0 applied to the base per-tick formula.
+  At level 30 this takes a wilderness rest from ~12 HP/tick
+  retail up to ~36 HP/tick.
+* Tick interval 4s -> 2s — twice as often.
+* Ramp 20s -> 6s — full speed by the time the second tick lands.
+* Zone floors raised: wilderness +25%, dungeons no longer punished.
+
+Net effect: a 50% HP loss after a fight clears in roughly 12-15
+seconds in a wilderness zone, vs. retail's ~60s. Combat-to-
+combat downtime feels like the rest of the game's tempo.
 
 Public surface
 --------------
@@ -20,34 +37,47 @@ import enum
 import typing as t
 
 
+# Demoncore tempo multiplier. Single knob to keep the canonical
+# FFXI ratios while making everything proportionally faster.
+TEMPO_MULTIPLIER = 3.0
+
+# Per-tick cap. Bumped from 25 retail to 75 to leave room for the
+# tempo multiplier without bottlenecking high-level rests.
+PER_TICK_CAP = 75
+
+
 class ZoneModifier(str, enum.Enum):
-    CITY = "city"            # +50% rate
-    OUTPOST = "outpost"      # +25% rate
-    WILDERNESS = "wilderness"  # baseline
-    DUNGEON = "dungeon"      # -25% rate
+    CITY = "city"              # safest haven, fastest rest
+    OUTPOST = "outpost"
+    WILDERNESS = "wilderness"  # most common rest spot
+    DUNGEON = "dungeon"
 
 
 _ZONE_MULTIPLIER: dict[ZoneModifier, float] = {
-    ZoneModifier.CITY: 1.5,
-    ZoneModifier.OUTPOST: 1.25,
-    ZoneModifier.WILDERNESS: 1.0,
-    ZoneModifier.DUNGEON: 0.75,
+    ZoneModifier.CITY: 2.0,
+    ZoneModifier.OUTPOST: 1.5,
+    ZoneModifier.WILDERNESS: 1.25,
+    # Dungeons no longer punish resting — the punishment is the
+    # mob density, not the heal rate. Floor raised from 0.75 -> 1.0.
+    ZoneModifier.DUNGEON: 1.0,
 }
 
 
-# Base resting tick formula (per FFXI canonical):
-# HP per tick = 12 + (level-10)/10  capped at 25
-# MP per tick = 12 + (level-10)/10  capped at 25
+# Base resting tick formula (FFXI canonical pre-tempo bump):
+#   raw = 12 + (level-10)/10
+# Demoncore applies TEMPO_MULTIPLIER on top, capped at PER_TICK_CAP.
 def _base_per_tick(*, level: int) -> int:
     if level < 1:
         return 0
     raw = 12 + (level - 10) // 10
-    return min(25, max(1, raw))
+    boosted = int(round(raw * TEMPO_MULTIPLIER))
+    return min(PER_TICK_CAP, max(1, boosted))
 
 
-# Resting ramps up over the first 20 seconds — start at 50% rate.
-RAMP_DURATION_SECONDS = 20
-TICK_INTERVAL_SECONDS = 4    # heal tick every 4 sec retail
+# Resting ramps up over the first 6 seconds — start at 50% rate.
+# Faster than retail's 20s so the heal feels responsive.
+RAMP_DURATION_SECONDS = 6
+TICK_INTERVAL_SECONDS = 2    # heal tick every 2 sec (retail = 4)
 
 
 @dataclasses.dataclass
@@ -110,6 +140,7 @@ class RestingState:
 
 
 __all__ = [
+    "TEMPO_MULTIPLIER", "PER_TICK_CAP",
     "ZoneModifier", "RAMP_DURATION_SECONDS",
     "TICK_INTERVAL_SECONDS",
     "RestingState",
