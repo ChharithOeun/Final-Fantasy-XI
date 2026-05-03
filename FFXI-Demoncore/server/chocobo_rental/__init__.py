@@ -4,11 +4,21 @@ A simple opt-in mount system for players without a personal
 captured/raised chocobo. Pay gil, ride for a fixed duration,
 dismount automatically when the timer expires or combat starts.
 
-Rental chocobos:
-* CAN'T enter dungeons / instances
-* CAN'T be ridden in combat — auto-dismount on aggro
-* CAN'T be parked in a Mog House
-* DO refund unused minutes if dismounted at a stable
+Hard rules — rental chocobos are RECREATIONAL ONLY:
+* CANNOT FIGHT.       Auto-dismount on combat aggro.
+* CANNOT be COMPANIONS.  No BST charm slot, no SMN avatar bond,
+                          no PUP automaton pair, etc.
+* CANNOT be used for MOUNTED COMBAT. mounted_combat must refuse
+                                       any rental chocobo.
+* CANNOT enter dungeons / instances.
+* CANNOT be parked in a Mog House.
+* DO refund unused minutes if dismounted at a stable.
+
+These are enforced via the public predicates
+`is_combat_eligible() -> False`, `is_companion_eligible() -> False`,
+and `is_mounted_combat_eligible() -> False`. mounted_combat /
+companion systems should call these before accepting a chocobo
+as a combat resource.
 
 Stables exist in major cities + outposts. Per-stable pricing
 varies (frontier outposts charge more).
@@ -33,6 +43,13 @@ import typing as t
 DEFAULT_RENTAL_MINUTES = 30
 MAX_RENTAL_MINUTES = 120
 GIL_PER_MINUTE_BASE = 8
+
+
+# Hard restriction flags — these are CLASS invariants, not
+# per-rental config. Every rental chocobo is recreational.
+RENTAL_COMBAT_ELIGIBLE = False
+RENTAL_COMPANION_ELIGIBLE = False
+RENTAL_MOUNTED_COMBAT_ELIGIBLE = False
 
 
 class StableId(str, enum.Enum):
@@ -84,6 +101,16 @@ class RentalRecord:
             0.0, self.expires_at_seconds() - now_seconds,
         )
         return int(remaining_seconds // 60)
+
+    # ---- Hard rules — always False for rental chocobos -------------
+    def is_combat_eligible(self) -> bool:
+        return RENTAL_COMBAT_ELIGIBLE
+
+    def is_companion_eligible(self) -> bool:
+        return RENTAL_COMPANION_ELIGIBLE
+
+    def is_mounted_combat_eligible(self) -> bool:
+        return RENTAL_MOUNTED_COMBAT_ELIGIBLE
 
 
 @dataclasses.dataclass(frozen=True)
@@ -159,10 +186,46 @@ class PlayerRentalState:
         )
 
 
+# ---------------------------------------------------------------------
+# Integration guards — other modules call these before accepting a
+# rental chocobo as a combat / companion / mounted-combat resource.
+# ---------------------------------------------------------------------
+
+def is_rental_combat_eligible(rental: RentalRecord) -> bool:
+    """Always False. Rental chocobos cannot fight."""
+    return rental.is_combat_eligible()
+
+
+def is_rental_companion_eligible(rental: RentalRecord) -> bool:
+    """Always False. Rental chocobos cannot be BST/SMN/PUP companions."""
+    return rental.is_companion_eligible()
+
+
+def is_rental_mounted_combat_eligible(rental: RentalRecord) -> bool:
+    """Always False. mounted_combat must refuse rental chocobos."""
+    return rental.is_mounted_combat_eligible()
+
+
+def reject_for_combat(rental: RentalRecord) -> str:
+    """Standard error string when a caller tries to use a rental
+    chocobo for any combat purpose."""
+    return (
+        "Rental chocobos are recreational only — "
+        "they cannot fight, be companions, or join mounted combat. "
+        "Use a captured or bred chocobo instead."
+    )
+
+
 __all__ = [
     "DEFAULT_RENTAL_MINUTES", "MAX_RENTAL_MINUTES",
     "GIL_PER_MINUTE_BASE",
+    "RENTAL_COMBAT_ELIGIBLE", "RENTAL_COMPANION_ELIGIBLE",
+    "RENTAL_MOUNTED_COMBAT_ELIGIBLE",
     "StableId", "RentalRecord",
     "StartResult", "ReturnResult",
     "rental_quote", "PlayerRentalState",
+    "is_rental_combat_eligible",
+    "is_rental_companion_eligible",
+    "is_rental_mounted_combat_eligible",
+    "reject_for_combat",
 ]
