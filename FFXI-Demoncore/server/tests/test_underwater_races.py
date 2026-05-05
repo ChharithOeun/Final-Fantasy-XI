@@ -59,60 +59,75 @@ def test_pick_shark_top_bucket():
     assert r.pick_shark_subtype(seed_pct=99) == SharkSubtype.NURSE
 
 
-def test_validate_mermaid_female():
+def test_validate_character_always_rejects_player_creation():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    # All 5 races are NPC-only, so player-creation always fails
+    for race in UnderwaterRace:
+        for gender in ("female", "male", None):
+            res = r.validate_character(race=race, gender=gender)
+            assert not res.accepted
+
+
+def test_is_player_playable_false_for_all():
+    r = UnderwaterRaceRegistry()
+    for race in UnderwaterRace:
+        assert not r.is_player_playable(race=race)
+
+
+def test_validate_npc_mermaid_female():
+    r = UnderwaterRaceRegistry()
+    res = r.validate_npc(
         race=UnderwaterRace.MERMAID, gender="female",
     )
     assert res.accepted
 
 
-def test_validate_mermaid_male_rejected():
+def test_validate_npc_mermaid_male_rejected():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    res = r.validate_npc(
         race=UnderwaterRace.MERMAID, gender="male",
     )
     assert not res.accepted
 
 
-def test_validate_shark_male():
+def test_validate_npc_shark_male():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    res = r.validate_npc(
         race=UnderwaterRace.SHARK_HUMANOID, gender="male",
     )
     assert res.accepted
 
 
-def test_validate_shark_female_rejected():
+def test_validate_npc_shark_female_rejected():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    res = r.validate_npc(
         race=UnderwaterRace.SHARK_HUMANOID, gender="female",
     )
     assert not res.accepted
 
 
-def test_validate_jellyfish_genderless():
+def test_validate_npc_jellyfish_genderless():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    res = r.validate_npc(
         race=UnderwaterRace.JELLYFISH, gender=None,
     )
     assert res.accepted
 
 
-def test_validate_octopi_must_specify():
+def test_validate_npc_octopi_must_specify():
     r = UnderwaterRaceRegistry()
-    res = r.validate_character(
+    res = r.validate_npc(
         race=UnderwaterRace.OCTOPI_SQUID, gender=None,
     )
     assert not res.accepted
 
 
-def test_validate_octopi_either_works():
+def test_validate_npc_octopi_either_works():
     r = UnderwaterRaceRegistry()
-    res_m = r.validate_character(
+    res_m = r.validate_npc(
         race=UnderwaterRace.OCTOPI_SQUID, gender="male",
     )
-    res_f = r.validate_character(
+    res_f = r.validate_npc(
         race=UnderwaterRace.OCTOPI_SQUID, gender="female",
     )
     assert res_m.accepted

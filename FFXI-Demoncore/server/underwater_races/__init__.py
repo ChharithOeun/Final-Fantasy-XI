@@ -1,4 +1,9 @@
-"""Underwater races — 5 playable / NPC races for the deep cities.
+"""Underwater races — 5 NPC/world-only races for the deep cities.
+
+These races are *not* player-creatable; they exist purely as world
+inhabitants and lore. Player avatars stay in the hume/beastman
+roster; this module describes who lives in the underwater cities
+and how their gender/subtype rules read.
 
 Demoncore's underwater expansion adds five sea-dwelling races with
 distinct gender constraints, subtypes, and combat profiles:
@@ -79,6 +84,7 @@ class UnderwaterRaceProfile:
     home_city: str
     swim: SwimProfile
     description: str
+    is_player_playable: bool = False
 
 
 _PROFILES: dict[UnderwaterRace, UnderwaterRaceProfile] = {
@@ -160,6 +166,40 @@ class UnderwaterRaceRegistry:
         self, *, race: UnderwaterRace,
         gender: t.Optional[str],
     ) -> ValidateResult:
+        """Reject ALL player-creation attempts — underwater races are
+        NPC/world only. Kept on the surface so character-creator UI
+        gets a consistent, explanatory rejection."""
+        prof = _PROFILES.get(race)
+        if prof is None:
+            return ValidateResult(False, reason="unknown race")
+        if not prof.is_player_playable:
+            return ValidateResult(
+                False, reason="race is NPC/world only",
+            )
+        # If a future race ever flips is_player_playable=True, fall
+        # through to the canonical gender-rule check.
+        rule = prof.gender_rule
+        if rule == Gender.FEMALE_ONLY and gender != "female":
+            return ValidateResult(
+                False, reason="race is female-only",
+            )
+        if rule == Gender.MALE_ONLY and gender != "male":
+            return ValidateResult(
+                False, reason="race is male-only",
+            )
+        if rule == Gender.EITHER and gender not in ("male", "female"):
+            return ValidateResult(
+                False, reason="must specify male or female",
+            )
+        return ValidateResult(accepted=True)
+
+    def validate_npc(
+        self, *, race: UnderwaterRace,
+        gender: t.Optional[str],
+    ) -> ValidateResult:
+        """NPC-spawn validator — applies the gender rule but ignores
+        the is_player_playable lockout (used by the world spawner
+        to seed underwater cities and overworld encounters)."""
         prof = _PROFILES.get(race)
         if prof is None:
             return ValidateResult(False, reason="unknown race")
@@ -176,8 +216,15 @@ class UnderwaterRaceRegistry:
             return ValidateResult(
                 False, reason="must specify male or female",
             )
-        # GENDERLESS races accept anything
         return ValidateResult(accepted=True)
+
+    def is_player_playable(
+        self, *, race: UnderwaterRace,
+    ) -> bool:
+        prof = _PROFILES.get(race)
+        if prof is None:
+            return False
+        return prof.is_player_playable
 
     def total_races(self) -> int:
         return len(_PROFILES)
