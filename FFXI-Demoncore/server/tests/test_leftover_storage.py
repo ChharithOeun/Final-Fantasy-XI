@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from server.cookpot_recipes import BuffPayload, DishKind
-from server.leftover_storage import LeftoverState, LeftoverStorage
+from server.leftover_storage import (
+    LeftoverState, LeftoverStorage, Provenance, ProvisionKind,
+)
 
 
 def _stash(s, lid="l1", **overrides):
@@ -178,3 +180,125 @@ def test_total_leftovers():
     _stash(s, lid="a")
     _stash(s, lid="b")
     assert s.total_leftovers() == 2
+
+
+# --- ProvisionKind defaults + NPC stocked tuning ---
+
+def test_default_food_shelf_seven_days():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="alice",
+        dish=DishKind.HUNTERS_STEW,
+        payload=BuffPayload(str_bonus=5, duration_seconds=600),
+        stashed_at=10, kind=ProvisionKind.FOOD,
+    )
+    # 7 * 24 * 3600 = 604800
+    # one second short → still fresh
+    s.age_all(dt_seconds=604799)
+    assert s.state_of(leftover_id="l1") != LeftoverState.SPOILED
+    s.age_all(dt_seconds=2)
+    assert s.state_of(leftover_id="l1") == LeftoverState.SPOILED
+
+
+def test_default_drink_shelf_three_months():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="alice",
+        dish=DishKind.WARMING_TEA,
+        payload=BuffPayload(cold_resist=15, duration_seconds=600),
+        stashed_at=10, kind=ProvisionKind.DRINK,
+    )
+    # 90 * 24 * 3600 = 7776000
+    # half a year of food-grade time → still ok for a drink
+    s.age_all(dt_seconds=7000000)
+    assert s.state_of(leftover_id="l1") != LeftoverState.SPOILED
+    s.age_all(dt_seconds=800000)
+    assert s.state_of(leftover_id="l1") == LeftoverState.SPOILED
+
+
+def test_npc_stocked_does_not_age():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="vendor_npc",
+        dish=DishKind.HUNTERS_STEW,
+        payload=BuffPayload(str_bonus=5, duration_seconds=600),
+        stashed_at=10, kind=ProvisionKind.FOOD,
+        provenance=Provenance.NPC_STOCKED,
+    )
+    # bombard with aging — still fresh
+    s.age_all(dt_seconds=999_999_999)
+    assert s.state_of(leftover_id="l1") == LeftoverState.FRESH
+
+
+def test_npc_stocked_ages_after_purchase():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="vendor_npc",
+        dish=DishKind.HUNTERS_STEW,
+        payload=BuffPayload(str_bonus=5, duration_seconds=600),
+        stashed_at=10, kind=ProvisionKind.FOOD,
+        provenance=Provenance.NPC_STOCKED,
+    )
+    # Player buys it → flips to PLAYER_MADE
+    ok = s.transfer_to_player(
+        leftover_id="l1", new_owner_id="alice",
+    )
+    assert ok is True
+    # Now it ages normally (food shelf 604800)
+    s.age_all(dt_seconds=604801)
+    assert s.state_of(leftover_id="l1") == LeftoverState.SPOILED
+
+
+def test_transfer_already_player_owned_blocked():
+    s = LeftoverStorage()
+    _stash(s)  # default PLAYER_MADE
+    out = s.transfer_to_player(
+        leftover_id="l1", new_owner_id="bob",
+    )
+    assert out is False
+
+
+def test_transfer_unknown():
+    s = LeftoverStorage()
+    out = s.transfer_to_player(
+        leftover_id="ghost", new_owner_id="alice",
+    )
+    assert out is False
+
+
+def test_transfer_blank_owner_blocked():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="vendor_npc",
+        dish=DishKind.HUNTERS_STEW,
+        payload=BuffPayload(duration_seconds=600),
+        stashed_at=10, provenance=Provenance.NPC_STOCKED,
+    )
+    out = s.transfer_to_player(
+        leftover_id="l1", new_owner_id="",
+    )
+    assert out is False
+
+
+def test_purchased_npc_stock_loses_npc_owner():
+    s = LeftoverStorage()
+    s.stash(
+        leftover_id="l1", owner_id="vendor_npc",
+        dish=DishKind.HUNTERS_STEW,
+        payload=BuffPayload(str_bonus=5, duration_seconds=600),
+        stashed_at=10, provenance=Provenance.NPC_STOCKED,
+    )
+    s.transfer_to_player(
+        leftover_id="l1", new_owner_id="alice",
+    )
+    # Vendor can no longer consume it; alice can.
+    out = s.consume(leftover_id="l1", consumer_id="vendor_npc")
+    assert out is None
+
+
+def test_two_provision_kinds():
+    assert len(list(ProvisionKind)) == 2
+
+
+def test_two_provenances():
+    assert len(list(Provenance)) == 2
