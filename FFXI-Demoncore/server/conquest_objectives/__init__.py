@@ -8,7 +8,11 @@ alliance needs to survive the next wave.
 
 Three objective kinds:
     KILL_NM     - kill a specific NM; out-of-order kills
-                  fail the chain
+                  REVIVE the chain (all NMs respawn at full
+                  HP/MP, cursor resets, retry_count++) so
+                  the alliance can try again — but the
+                  phase timer keeps ticking and is the real
+                  enforcement
     MINIGAME    - timed mini-game (tide-puzzle, current-
                   surfing, kelp-maze, pearl-trace)
     QUEST_STEP  - narrative step (rescue mermaid scout,
@@ -32,6 +36,7 @@ Public surface
             -> ObjectiveResult
         .current_objective(chain_id) -> Optional[Objective]
         .progress_for(chain_id) -> tuple[Objective, ...]
+        .retries_used(chain_id) -> int
         .all_complete(chain_id) -> bool
 """
 from __future__ import annotations
@@ -74,6 +79,8 @@ class ObjectiveResult:
     objective_completed: bool = False
     oxygen_tank_dropped: bool = False
     chain_failed: bool = False
+    chain_revived: bool = False
+    retry_count: int = 0
     next_objective_id: t.Optional[str] = None
     reason: t.Optional[str] = None
 
@@ -87,6 +94,7 @@ class _ChainState:
     statuses: list[ObjectiveStatus]
     cursor: int = 0   # index of next pending objective
     failed: bool = False
+    retry_count: int = 0
 
 
 @dataclasses.dataclass
@@ -133,19 +141,26 @@ class ConquestObjectives:
             return ObjectiveResult(False, reason="chain complete")
         expected = c.objectives[c.cursor]
         if expected.objective_id != objective_id:
-            # out of order — fail the chain
-            c.failed = True
+            # out of order — REVIVE chain (NMs respawn at full HP/MP,
+            # cursor resets, retry_count++). Phase timer keeps ticking.
+            self._revive_chain(c)
             return ObjectiveResult(
-                False, chain_failed=True,
-                reason="out-of-order objective",
+                accepted=False,
+                chain_revived=True,
+                retry_count=c.retry_count,
+                next_objective_id=c.objectives[0].objective_id,
+                reason="out-of-order objective — chain revived",
             )
         # for KILL_NM, the killed NM must match
         if expected.kind == ObjectiveKind.KILL_NM:
             if killed_nm_id != expected.nm_id:
-                c.failed = True
+                self._revive_chain(c)
                 return ObjectiveResult(
-                    False, chain_failed=True,
-                    reason="wrong nm killed",
+                    accepted=False,
+                    chain_revived=True,
+                    retry_count=c.retry_count,
+                    next_objective_id=c.objectives[0].objective_id,
+                    reason="wrong nm killed — chain revived",
                 )
         # accepted
         c.statuses[c.cursor] = ObjectiveStatus.COMPLETED
@@ -162,8 +177,26 @@ class ConquestObjectives:
                 expected.kind == ObjectiveKind.KILL_NM
                 and expected.oxygen_drop
             ),
+            retry_count=c.retry_count,
             next_objective_id=next_id,
         )
+
+    def _revive_chain(self, c: _ChainState) -> None:
+        """Reset cursor and respawn all NMs (statuses → PENDING).
+
+        The phase timer is NOT touched — it keeps ticking. The
+        only enforcement is the timer. retry_count++ tracks how
+        many revivals have happened so the UI can warn the
+        alliance how much time they've burned.
+        """
+        c.cursor = 0
+        c.retry_count += 1
+        for i in range(len(c.statuses)):
+            c.statuses[i] = ObjectiveStatus.PENDING
+
+    def retries_used(self, *, chain_id: str) -> int:
+        c = self._chains.get(chain_id)
+        return c.retry_count if c else 0
 
     def current_objective(
         self, *, chain_id: str,

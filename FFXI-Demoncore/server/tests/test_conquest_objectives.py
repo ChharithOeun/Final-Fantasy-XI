@@ -95,7 +95,7 @@ def test_complete_first_in_order():
     assert out.next_objective_id == "o2"
 
 
-def test_out_of_order_fails_chain():
+def test_out_of_order_revives_chain():
     c = ConquestObjectives()
     c.register_chain(
         chain_id="c1", zone_id="reef", phase=1,
@@ -106,10 +106,15 @@ def test_out_of_order_fails_chain():
         killed_nm_id="sahagin_captain",
     )
     assert out.accepted is False
-    assert out.chain_failed is True
+    assert out.chain_revived is True
+    assert out.chain_failed is False
+    assert out.retry_count == 1
+    # cursor reset to first objective
+    assert out.next_objective_id == "o1"
+    assert c.retries_used(chain_id="c1") == 1
 
 
-def test_wrong_nm_kill_fails_chain():
+def test_wrong_nm_kill_revives_chain():
     c = ConquestObjectives()
     c.register_chain(
         chain_id="c1", zone_id="reef", phase=1,
@@ -120,7 +125,57 @@ def test_wrong_nm_kill_fails_chain():
         killed_nm_id="wrong_nm",
     )
     assert out.accepted is False
-    assert out.chain_failed is True
+    assert out.chain_revived is True
+    assert out.chain_failed is False
+    assert out.retry_count == 1
+    assert c.retries_used(chain_id="c1") == 1
+
+
+def test_revived_chain_completable_on_retry():
+    """After a wrong-NM revive, alliance can clear the chain."""
+    c = ConquestObjectives()
+    c.register_chain(
+        chain_id="c1", zone_id="reef", phase=1,
+        objectives=_seed_chain(),
+    )
+    # mistake: kill captain first
+    c.complete_objective(
+        chain_id="c1", objective_id="o3",
+        killed_nm_id="sahagin_captain",
+    )
+    # chain revived — current obj is o1 again
+    assert c.current_objective(chain_id="c1").objective_id == "o1"
+    # try again, in correct order this time
+    o1 = c.complete_objective(
+        chain_id="c1", objective_id="o1",
+        killed_nm_id="sahagin_marauder",
+    )
+    assert o1.accepted is True
+    assert o1.oxygen_tank_dropped is True
+    o2 = c.complete_objective(chain_id="c1", objective_id="o2")
+    assert o2.accepted is True
+    o3 = c.complete_objective(
+        chain_id="c1", objective_id="o3",
+        killed_nm_id="sahagin_captain",
+    )
+    assert o3.accepted is True
+    o4 = c.complete_objective(chain_id="c1", objective_id="o4")
+    assert o4.accepted is True
+    assert c.all_complete(chain_id="c1") is True
+
+
+def test_multiple_revives_increment_retry_count():
+    c = ConquestObjectives()
+    c.register_chain(
+        chain_id="c1", zone_id="reef", phase=1,
+        objectives=_seed_chain(),
+    )
+    for _ in range(3):
+        c.complete_objective(
+            chain_id="c1", objective_id="o3",
+            killed_nm_id="sahagin_captain",
+        )
+    assert c.retries_used(chain_id="c1") == 3
 
 
 def test_oxygen_drops_only_on_marked_kills():
@@ -171,7 +226,8 @@ def test_current_objective_advances():
     assert c.current_objective(chain_id="c1").objective_id == "o2"
 
 
-def test_current_objective_none_after_failure():
+def test_current_objective_resets_to_first_after_revive():
+    """Out-of-order kill revives the chain — cursor is back at o1."""
     c = ConquestObjectives()
     c.register_chain(
         chain_id="c1", zone_id="reef", phase=1,
@@ -181,7 +237,10 @@ def test_current_objective_none_after_failure():
         chain_id="c1", objective_id="o3",
         killed_nm_id="sahagin_captain",
     )
-    assert c.current_objective(chain_id="c1") is None
+    # not None — revive, not fail
+    cur = c.current_objective(chain_id="c1")
+    assert cur is not None
+    assert cur.objective_id == "o1"
 
 
 def test_all_complete_after_all_done():
